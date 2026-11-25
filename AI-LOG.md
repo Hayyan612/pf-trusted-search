@@ -57,3 +57,11 @@ I built this with Claude (Claude Code) as my main tool. These are moments where 
 **How I caught it.** Running the whole flow in Chrome: the quick questions asked for budget and household but not move-in, and the review screen showed "As soon as possible".
 
 **What changed.** The instructions now say to fill a field only if the person said it, and that moveIn must be null when no date is given; the field description says the same. The review screen stays, so the person can always correct what the model read.
+
+## 8. The negotiation message thanked the agent for a viewing that never happened
+
+**What the AI said.** Testing the live "Write my negotiation brief" on a 3-bed, the model's message to the agent began "Thank you for showing us the property. We are very interested." The person had not viewed the flat or spoken to the agent. Sent as is, it would have been the person's first message, starting with a false claim.
+
+**How I caught it.** Reading the API's output on the live site after deploying, before showing it to anyone. The numbers were right (they are checked in code); the words were not.
+
+**What changed.** The instructions now say the person has not viewed the flat or spoken to the agent, never to thank them for a viewing, to use the agent's first name, and to keep it under 90 words. The next live run opened with "I am interested in the 3-bedroom unit and would like to make an opening offer". The same lesson shaped the free-text questions: when the model says "the ad already says…", code checks that the quote really is in the ad, and drops it if not.
