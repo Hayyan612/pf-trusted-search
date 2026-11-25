@@ -32,6 +32,7 @@ export interface Listing {
   url: string;
   level: string | null;
   description: string;
+  descriptionText: string;
   vsMedian: number | null;
   medianPpsf: number | null;
   checks: Check[];
@@ -64,7 +65,7 @@ export interface Unit {
 
 const data = appData as unknown as {
   buildingDetails: { developer_name?: string; master_developer_name?: string; completion_year?: number } | null;
-  trends: Record<string, TrendPoint[]>;
+  trends: Record<string, Record<string, TrendPoint[]>>;
   building: string;
   capturedAt: string;
   listings: Listing[];
@@ -78,8 +79,8 @@ export const BUILDING = data.building;
 export const CAPTURED_AT = data.capturedAt;
 export const BUILDING_DETAILS = data.buildingDetails;
 
-export function trendFor(kind: Kind, beds: number): TrendPoint[] {
-  return data.trends[`${kind}-${beds}`] ?? [];
+export function trendFor(kind: Kind, beds: number): Record<string, TrendPoint[]> {
+  return data.trends[`${kind}-${beds}`] ?? {};
 }
 
 export function getListing(id: string): Listing | undefined {

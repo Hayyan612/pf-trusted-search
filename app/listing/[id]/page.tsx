@@ -2,15 +2,20 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   BedDouble, Bath, Maximize, ExternalLink, ShieldCheck, ShieldAlert, ShieldX, Layers, ChevronLeft,
-  Clock, Building2, Sofa, BadgeCheck, Languages, FileText, Check,
+  Clock, Building2, Sofa, Languages, FileText, Check, TrendingUp, Receipt,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StatusPill } from "@/components/status-pill";
 import { ConfirmBar } from "@/components/confirm-drawer";
 import { FadeImage } from "@/components/fade-image";
-import { PhotoGallery } from "@/components/photo-gallery";
 import { AgentAvatar } from "@/components/agent-avatar";
+import { PhotoGallery } from "@/components/photo-gallery";
+import { PriceTrend } from "@/components/price-trend";
+import { ListingDescription } from "@/components/listing-description";
 import { getListing, getUnit, aed, listedAgo, trendFor, BUILDING_DETAILS, type Severity } from "@/lib/data";
-import { TrendChart } from "@/components/trend-chart";
 import { cn } from "@/lib/utils";
 
 const ICON: Record<Severity, typeof ShieldCheck> = { ok: ShieldCheck, ask: ShieldAlert, hide: ShieldX };
@@ -21,6 +26,17 @@ const HEADLINE: Record<Severity, string> = {
   hide: "This ad is likely misleading. Scout hid it from your results.",
 };
 const FURNISHED: Record<string, string> = { YES: "Furnished", NO: "Unfurnished", PARTLY: "Partly furnished" };
+const clean = (s?: string) => (s ?? "").toLowerCase().replace(/\s+\((llc|p\.j\.s\.c)\)/, "").replace(/\s+/g, " ").trim();
+
+function Row({ k, v, icon: Icon }: { k: string; v: React.ReactNode; icon?: typeof Clock }) {
+  return (
+    <div className="flex items-center gap-3 py-1.5">
+      {Icon && <Icon className="size-4 shrink-0 text-muted-foreground" />}
+      <dt className="w-28 shrink-0 text-muted-foreground">{k}</dt>
+      <dd className="min-w-0 font-medium break-words">{v}</dd>
+    </div>
+  );
+}
 
 export default async function ListingPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -30,15 +46,8 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
   const siblings = (unit?.listingIds ?? []).filter((x) => x !== l.id).map((x) => getListing(x)!).filter(Boolean);
   const order = { hide: 0, ask: 1, ok: 2 } as const;
   const checks = [...l.checks].sort((a, b) => order[a.severity] - order[b.severity]);
-  const median = l.medianPpsf ?? 0;
-  const details = [
-    { icon: Clock, k: "Listed", v: listedAgo(l.ageDays) },
-    { icon: Building2, k: "Property type", v: "Apartment" },
-    { icon: BedDouble, k: "Bedrooms", v: `${l.beds} ${l.beds === 1 ? "Bed" : "Beds"}` },
-    { icon: Bath, k: "Bathrooms", v: `${l.baths} ${l.baths === 1 ? "Bath" : "Baths"}` },
-    { icon: Maximize, k: "Area", v: `${l.size.toLocaleString()} sq ft` },
-    { icon: Sofa, k: "Furnishing", v: l.furnished ? FURNISHED[l.furnished] ?? l.furnished : "Not stated" },
-  ];
+  const trend = trendFor(l.kind, l.beds);
+  const what = l.kind === "rent" ? "rents" : "sales";
 
   return (
     <div className="mx-auto max-w-7xl pb-24 md:px-8 md:pt-4 md:pb-12">
@@ -49,169 +58,195 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
       <PhotoGallery images={l.images} total={l.imageCount} verified={l.verified} superAgent={l.agentSuper} sourceUrl={l.url} title={l.title ?? "Listing photos"} />
 
       <div className="mt-4 grid gap-6 px-4 md:grid-cols-[minmax(0,1fr)_380px] md:gap-8 md:px-0">
-        {/* Main column */}
-        <div className="min-w-0 space-y-6">
+        <div className="min-w-0 space-y-5">
           <Link href={`/search?kind=${l.kind}&beds=${l.beds}`} className="inline-flex items-center gap-1 text-[13px] text-muted-foreground md:hidden">
             <ChevronLeft className="size-4" /> Back to results
           </Link>
+
           <div className="space-y-3">
             <div className="text-[26px] font-semibold tracking-tight">
               AED {l.price.toLocaleString("en-US")}
               {l.kind === "rent" && <span className="text-[17px] font-normal text-muted-foreground"> yearly</span>}
             </div>
-            <div className="flex flex-wrap gap-2 text-[13px]">
+            <div className="flex flex-wrap gap-2">
               {l.vsRegistered !== null && (
-                <span className={cn("rounded-lg px-2.5 py-1", l.vsRegistered <= -15 ? "bg-amber-50 text-amber-800" : "bg-accent text-primary")}>
-                  {l.vsRegistered > 0 ? "+" : ""}{l.vsRegistered}% vs registered {l.kind === "rent" ? "rents" : "sales"}
-                </span>
+                <Badge variant="secondary" className={cn("rounded-md px-2.5 py-1 text-[13px] font-normal", l.vsRegistered <= -15 ? "bg-amber-50 text-amber-800" : "bg-accent text-primary")}>
+                  {l.vsRegistered > 0 ? "+" : ""}{l.vsRegistered}% vs registered {what}
+                </Badge>
               )}
-              {siblings.length > 0 && <span className="rounded-lg bg-accent px-2.5 py-1 text-primary">Also advertised {siblings.length}× elsewhere</span>}
-              <a href={l.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-lg bg-accent px-2.5 py-1 text-primary transition-colors hover:bg-primary/10">
-                View on Property Finder <ExternalLink className="size-3" />
-              </a>
+              {siblings.length > 0 && (
+                <Badge variant="secondary" className="rounded-md bg-accent px-2.5 py-1 text-[13px] font-normal text-primary">
+                  <Layers /> Also advertised {siblings.length}× elsewhere
+                </Badge>
+              )}
+              <Badge asChild variant="secondary" className="rounded-md bg-accent px-2.5 py-1 text-[13px] font-normal text-primary hover:bg-primary/10">
+                <a href={l.url} target="_blank" rel="noreferrer">View on Property Finder <ExternalLink /></a>
+              </Badge>
             </div>
           </div>
 
-          <section className="border-t pt-5">
-            <h2 className="mb-3 text-[16px] font-semibold">Property details</h2>
-            <dl className="grid grid-cols-1 gap-x-8 gap-y-3 text-[14px] sm:grid-cols-2">
-              {details.map(({ icon: Icon, k, v }) => (
-                <div key={k} className="flex items-center gap-3">
-                  <Icon className="size-4 shrink-0 text-muted-foreground" />
-                  <dt className="w-28 shrink-0 text-muted-foreground">{k}</dt>
-                  <dd className="font-medium">{v}</dd>
-                </div>
-              ))}
-            </dl>
-          </section>
+          <Card>
+            <CardHeader><CardTitle>Property details</CardTitle></CardHeader>
+            <CardContent>
+              <dl className="grid grid-cols-1 gap-x-8 text-[14px] sm:grid-cols-2">
+                <Row icon={Clock} k="Listed" v={listedAgo(l.ageDays)} />
+                <Row icon={Building2} k="Property type" v="Apartment" />
+                <Row icon={BedDouble} k="Bedrooms" v={`${l.beds} ${l.beds === 1 ? "Bed" : "Beds"}`} />
+                <Row icon={Bath} k="Bathrooms" v={`${l.baths} ${l.baths === 1 ? "Bath" : "Baths"}`} />
+                <Row icon={Maximize} k="Area" v={`${l.size.toLocaleString()} sq ft`} />
+                <Row icon={Sofa} k="Furnishing" v={l.furnished ? FURNISHED[l.furnished] ?? l.furnished : "Not stated"} />
+              </dl>
+            </CardContent>
+          </Card>
 
           {l.registered.length > 0 && (
-            <section className="border-t pt-5">
-              <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-                <h2 className="text-[16px] font-semibold">Registered {l.kind === "rent" ? "rents" : "sales"} for this size</h2>
-                <span className="text-[12px] text-muted-foreground">DLD records via DataGuru</span>
-              </div>
-              <div className="overflow-hidden rounded-xl border">
-                <table className="w-full text-[14px] tabular-nums">
-                  <thead className="bg-muted/60 text-left text-[12px] text-muted-foreground">
-                    <tr><th className="px-3 py-2 font-medium">Date</th><th className="px-3 py-2 font-medium">Price (AED)</th><th className="px-3 py-2 text-right font-medium">Size</th></tr>
-                  </thead>
-                  <tbody className="divide-y">
-                    <tr className="bg-accent/70 font-medium">
-                      <td className="px-3 py-2">This ad</td><td className="px-3 py-2">{l.price.toLocaleString("en-US")}</td><td className="px-3 py-2 text-right">{l.size.toLocaleString()} sq ft</td>
-                    </tr>
-                    {l.registered.map((t) => (
-                      <tr key={t.date + t.amount}>
-                        <td className="px-3 py-2">{new Date(t.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</td>
-                        <td className="px-3 py-2">{t.amount.toLocaleString("en-US")}</td>
-                        <td className="px-3 py-2 text-right">{t.size.toLocaleString()} sq ft</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              {l.vsRegistered !== null && l.registeredMedian && (
-                <p className="mt-2 text-[13px] text-muted-foreground">
-                  This ad is <b className="text-foreground">{l.vsRegistered > 0 ? `${l.vsRegistered}% above` : l.vsRegistered < 0 ? `${Math.abs(l.vsRegistered)}% below` : "equal to"}</b> the median of these registered {l.kind === "rent" ? "rents" : "sales"} (AED {Math.round(l.registeredMedian).toLocaleString("en-US")}).
-                  {median > 0 && l.vsMedian !== null && <> Against other live ads in the tower it is {l.vsMedian > 0 ? "+" : ""}{l.vsMedian}% per sq ft.</>}
-                </p>
-              )}
-            </section>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Receipt className="size-4 text-primary" /> Registered {what} for this size</CardTitle>
+                <CardDescription>What a {l.size.toLocaleString()} sq ft flat in this tower actually {l.kind === "rent" ? "rented" : "sold"} for. DLD records via DataGuru.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="overflow-hidden rounded-lg border">
+                  <Table className="tabular-nums">
+                    <TableHeader>
+                      <TableRow><TableHead>Date</TableHead><TableHead>Price (AED)</TableHead><TableHead className="text-right">Size</TableHead></TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow className="bg-accent/70 font-medium hover:bg-accent/70">
+                        <TableCell>This ad</TableCell><TableCell>{l.price.toLocaleString("en-US")}</TableCell><TableCell className="text-right">{l.size.toLocaleString()} sq ft</TableCell>
+                      </TableRow>
+                      {l.registered.map((t) => (
+                        <TableRow key={t.date + t.amount}>
+                          <TableCell>{new Date(t.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</TableCell>
+                          <TableCell>{t.amount.toLocaleString("en-US")}</TableCell>
+                          <TableCell className="text-right">{t.size.toLocaleString()} sq ft</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+                {l.vsRegistered !== null && l.registeredMedian && (
+                  <p className="text-[13px] text-muted-foreground">
+                    This ad is <b className="text-foreground">{l.vsRegistered > 0 ? `${l.vsRegistered}% above` : l.vsRegistered < 0 ? `${Math.abs(l.vsRegistered)}% below` : "equal to"}</b> the median of these registered {what} (AED {Math.round(l.registeredMedian).toLocaleString("en-US")}).
+                    {l.vsMedian !== null && <> Against other live ads in the tower it is {l.vsMedian > 0 ? "+" : ""}{l.vsMedian}% per sq ft.</>}
+                  </p>
+                )}
+              </CardContent>
+            </Card>
           )}
 
-          {trendFor(l.kind, l.beds).length > 1 && (
-            <section className="border-t pt-5">
-              <h2 className="mb-1 text-[16px] font-semibold">Prices and trends</h2>
-              <p className="mb-3 text-[13px] text-muted-foreground">Average {l.beds}-bed {l.kind === "rent" ? "yearly rent" : "sale price"}, last 12 months. DataGuru.</p>
-              <TrendChart points={trendFor(l.kind, l.beds)} unit={l.kind === "rent" ? "yearly rent" : "price"} />
-            </section>
+          {Object.keys(trend).length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2"><TrendingUp className="size-4 text-primary" /> Prices and trends</CardTitle>
+                <CardDescription>Average {l.beds}-bed {l.kind === "rent" ? "yearly rent" : "sale price"} in Princess Tower and Dubai Marina. DataGuru.</CardDescription>
+              </CardHeader>
+              <CardContent><PriceTrend series={trend} /></CardContent>
+            </Card>
           )}
 
           {siblings.length > 0 && (
-            <section className="border-t pt-5">
-              <h2 className="mb-2 flex items-center gap-2 text-[16px] font-semibold"><Layers className="size-4 text-primary" /> Same flat, other ads</h2>
-              <ul className="divide-y rounded-xl border">
-                {siblings.map((s) => (
-                  <li key={s.id}>
-                    <Link href={`/listing/${s.id}`} className="flex items-center gap-3 px-3 py-2.5 text-[14px] transition-colors hover:bg-accent/60">
-                      <AgentAvatar name={s.agent} image={s.agentImage} size={28} />
-                      <span className="min-w-0 flex-1 truncate">{s.broker}</span>
-                      <span className="font-medium">{aed(s.price)}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </section>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Layers className="size-4 text-primary" /> Same flat, other ads</CardTitle>
+                <CardDescription>The same photos, bedrooms and size, from other ads.</CardDescription>
+              </CardHeader>
+              <CardContent className="p-0">
+                <ul className="divide-y">
+                  {siblings.map((s) => (
+                    <li key={s.id}>
+                      <Link href={`/listing/${s.id}`} className="flex items-center gap-3 px-6 py-3 text-[14px] transition-colors hover:bg-accent/60">
+                        <AgentAvatar name={s.agent} image={s.agentImage} size={28} />
+                        <span className="min-w-0 flex-1 truncate">{s.broker}</span>
+                        <span className="font-medium tabular-nums">{aed(s.price)}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
           )}
 
-          <section className="border-t pt-5">
-            <div className="text-[12px] text-muted-foreground">Apartment for {l.kind === "rent" ? "rent" : "sale"} in Princess Tower, Dubai Marina</div>
-            <h2 className="mt-1 text-[18px] font-semibold">{l.title}</h2>
-            <p className="mt-2 text-[14px] leading-relaxed whitespace-pre-line text-muted-foreground">{l.description}…</p>
-          </section>
+          <Card>
+            <CardHeader>
+              <CardDescription>Apartment for {l.kind === "rent" ? "rent" : "sale"} in Princess Tower, Dubai Marina</CardDescription>
+              <CardTitle className="text-[18px]">{l.title}</CardTitle>
+            </CardHeader>
+            <CardContent><ListingDescription text={l.descriptionText || l.description} /></CardContent>
+          </Card>
 
           {l.amenities.length > 0 && (
-            <section className="border-t pt-5">
-              <h2 className="mb-3 text-[16px] font-semibold">Amenities</h2>
-              <ul className="flex flex-wrap gap-2">
+            <Card>
+              <CardHeader><CardTitle>Amenities</CardTitle></CardHeader>
+              <CardContent className="flex flex-wrap gap-2">
                 {l.amenities.map((a) => (
-                  <li key={a} className="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[13px]"><Check className="size-3.5 text-emerald-600" /> {a}</li>
+                  <Badge key={a} variant="outline" className="gap-1 rounded-md px-2.5 py-1 text-[13px] font-normal"><Check className="text-emerald-600" /> {a}</Badge>
                 ))}
-              </ul>
-            </section>
+              </CardContent>
+            </Card>
           )}
 
-          {BUILDING_DETAILS && (
-            <section className="border-t pt-5">
-              <h2 className="mb-3 flex items-center gap-2 text-[16px] font-semibold"><Building2 className="size-4" /> About Princess Tower</h2>
-              <dl className="grid grid-cols-1 gap-x-8 gap-y-2 text-[14px] sm:grid-cols-2">
-                <div className="flex gap-3"><dt className="w-28 shrink-0 text-muted-foreground">Developer</dt><dd className="font-medium capitalize">{BUILDING_DETAILS.developer_name?.toLowerCase().replace(/\s+\(llc\)/, "").trim()}</dd></div>
-                <div className="flex gap-3"><dt className="w-28 shrink-0 text-muted-foreground">Master plan</dt><dd className="font-medium capitalize">{BUILDING_DETAILS.master_developer_name?.toLowerCase().replace(/\s+\(p\.j\.s\.c\)/, "").trim()}</dd></div>
-                <div className="flex gap-3"><dt className="w-28 shrink-0 text-muted-foreground">Completed</dt><dd className="font-medium">{BUILDING_DETAILS.completion_year}</dd></div>
-                <div className="flex gap-3"><dt className="w-28 shrink-0 text-muted-foreground">Floors</dt><dd className="font-medium">101, same layouts repeat on most floors</dd></div>
-              </dl>
-            </section>
-          )}
-
-          <section className="border-t pt-5">
-            <h2 className="mb-3 flex items-center gap-2 text-[16px] font-semibold"><FileText className="size-4" /> Regulatory information</h2>
-            <dl className="grid grid-cols-1 gap-x-8 gap-y-2 text-[14px] sm:grid-cols-2">
-              <div className="flex gap-3"><dt className="w-28 shrink-0 text-muted-foreground">Reference</dt><dd className="min-w-0 font-medium break-all">{l.reference ?? "-"}</dd></div>
-              <div className="flex gap-3"><dt className="w-28 shrink-0 text-muted-foreground">Listed</dt><dd className="font-medium">{l.listed}</dd></div>
-              <div className="flex gap-3"><dt className="w-28 shrink-0 text-muted-foreground">Agency</dt><dd className="min-w-0 font-medium">{l.broker}</dd></div>
-              <div className="flex gap-3"><dt className="w-28 shrink-0 text-muted-foreground">Ad ID</dt><dd className="font-medium">{l.id}</dd></div>
-            </dl>
-            <p className="mt-2 text-[12px] text-muted-foreground">The permit and its DLD QR code are on the original ad.</p>
-          </section>
+          <div className="grid gap-5 lg:grid-cols-2">
+            {BUILDING_DETAILS && (
+              <Card>
+                <CardHeader><CardTitle className="flex items-center gap-2"><Building2 className="size-4" /> About Princess Tower</CardTitle></CardHeader>
+                <CardContent>
+                  <dl className="text-[14px]">
+                    <Row k="Developer" v={<span className="capitalize">{clean(BUILDING_DETAILS.developer_name)}</span>} />
+                    <Row k="Master plan" v={<span className="capitalize">{clean(BUILDING_DETAILS.master_developer_name)}</span>} />
+                    <Row k="Completed" v={BUILDING_DETAILS.completion_year} />
+                    <Row k="Floors" v="101, layouts repeat" />
+                  </dl>
+                </CardContent>
+              </Card>
+            )}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2"><FileText className="size-4" /> Regulatory information</CardTitle>
+                <CardDescription>The permit and its DLD QR code are on the original ad.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <dl className="text-[14px]">
+                  <Row k="Reference" v={<span className="break-all">{l.reference ?? "-"}</span>} />
+                  <Row k="Listed" v={l.listed} />
+                  <Row k="Agency" v={l.broker} />
+                  <Row k="Ad ID" v={l.id} />
+                </dl>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
-        {/* Sidebar: TrueUnit check, then agent and agency, like Property Finder's contact column */}
         <aside className="space-y-4 md:sticky md:top-24 md:self-start">
-          <section className="space-y-3 rounded-2xl border border-primary/25 bg-white p-4 shadow-xs">
-            <div className="flex items-center justify-between">
-              <h2 className="text-[15px] font-semibold">TrueUnit check</h2>
-              <StatusPill status={l.status} />
-            </div>
-            <p className="text-[14px]">{HEADLINE[l.status]}</p>
-            <ul className="space-y-3">
-              {checks.map((c, i) => {
-                const Icon = ICON[c.severity];
-                return (
-                  <li key={c.code + (c.other ?? "")} className="flex gap-3 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-left-1 motion-safe:fill-mode-both motion-safe:duration-300" style={{ animationDelay: `${120 + i * 60}ms` }}>
-                    <Icon className={cn("mt-0.5 size-5 shrink-0", TONE[c.severity])} />
-                    <div className="min-w-0 text-[14px]">
-                      <div className="font-medium">{c.label}</div>
-                      <div className="text-[13px] text-muted-foreground">{c.detail}</div>
-                      {c.other && <Link href={`/listing/${c.other}`} className="text-[13px] text-primary underline">See listing #{c.other}</Link>}
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
+          <Card className="border-primary/25">
+            <CardHeader>
+              <div className="flex items-center justify-between gap-2">
+                <CardTitle>TrueUnit check</CardTitle>
+                <StatusPill status={l.status} />
+              </div>
+              <CardDescription className="text-foreground">{HEADLINE[l.status]}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                {checks.map((c, i) => {
+                  const Icon = ICON[c.severity];
+                  return (
+                    <li key={c.code + (c.other ?? "")} className="flex gap-3 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-left-1 motion-safe:fill-mode-both motion-safe:duration-300" style={{ animationDelay: `${120 + i * 60}ms` }}>
+                      <Icon className={cn("mt-0.5 size-5 shrink-0", TONE[c.severity])} />
+                      <div className="min-w-0 text-[14px]">
+                        <div className="font-medium">{c.label}</div>
+                        <div className="text-[13px] text-muted-foreground">{c.detail}</div>
+                        {c.other && <Link href={`/listing/${c.other}`} className="text-[13px] text-primary underline">See listing #{c.other}</Link>}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </CardContent>
+          </Card>
 
-          <section className="overflow-hidden rounded-2xl bg-gradient-to-br from-primary to-[oklch(0.42_0.16_290)] p-4 text-white shadow-sm">
-            <div className="flex items-center gap-3">
+          <Card className="gap-4 border-0 bg-gradient-to-br from-primary to-[oklch(0.42_0.16_290)] text-white">
+            <CardContent className="flex items-center gap-3">
               <div className="relative">
                 <AgentAvatar name={l.agent} image={l.agentImage} size={64} className="ring-2 ring-white" />
                 {l.agentSuper && <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full bg-white px-1.5 py-0.5 text-[10px] font-semibold whitespace-nowrap text-primary">SuperAgent</span>}
@@ -222,18 +257,21 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
                   <div className="flex items-center gap-1 text-[12px] opacity-85"><Languages className="size-3.5" /> {l.agentLanguages.slice(0, 3).join(", ")}</div>
                 )}
               </div>
-            </div>
-            <div className="mt-4"><ConfirmBar listing={l} inline /></div>
-          </section>
+            </CardContent>
+            <CardContent className="hidden md:block"><ConfirmBar listing={l} inline /></CardContent>
+          </Card>
 
-          <section className="flex items-center gap-3 rounded-2xl border p-3">
-            {l.brokerLogo ? (
-              <span className="relative size-14 shrink-0 overflow-hidden rounded-lg border bg-white">
-                <FadeImage src={l.brokerLogo} alt="" className="absolute inset-0 size-full object-contain p-1" />
-              </span>
-            ) : null}
-            <div className="min-w-0 text-[14px] font-medium">{l.broker}</div>
-          </section>
+          <Card className="py-3">
+            <CardContent className="flex items-center gap-3 px-3">
+              {l.brokerLogo ? (
+                <span className="relative size-14 shrink-0 overflow-hidden rounded-lg border bg-white">
+                  <FadeImage src={l.brokerLogo} alt="" className="absolute inset-0 size-full object-contain p-1" />
+                </span>
+              ) : null}
+              <div className="min-w-0 text-[14px] font-medium">{l.broker}</div>
+            </CardContent>
+          </Card>
+          <Separator className="md:hidden" />
         </aside>
       </div>
       <ConfirmBar listing={l} />

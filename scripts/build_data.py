@@ -34,7 +34,9 @@ def listing(p, kind):
     price = (p.get("price") or {}).get("value")
     listed = p.get("listed_date")
     age = (TODAY - datetime.fromisoformat(listed.replace("Z", "+00:00"))).days if listed else None
-    desc = re.sub(r"\s+", " ", p.get("description") or "")
+    raw_desc = (p.get("description") or "").replace("\r", "")
+    desc = re.sub(r"\s+", " ", raw_desc)  # flat text for the checks
+    shown = re.sub(r"\n{3,}", "\n\n", re.sub(r"[ \t]+", " ", raw_desc)).strip()  # keeps the ad's line breaks
     return {
         "id": str(p["id"]), "kind": kind, "price": price, "beds": int(p.get("bedrooms") or 0),
         "baths": int(p.get("bathrooms") or 0), "size": size, "ppsf": round(price / size) if price and size else None,
@@ -44,6 +46,7 @@ def listing(p, kind):
         "images": [u.split("?")[0] for u in (p.get("images") or []) if u][:3], "title": p.get("title"),
         "url": "https://www.propertyfinder.ae" + (p.get("details_path") or ""), "level": p.get("listing_level"),
         "description": desc[:1200],
+        "descriptionText": shown[:3000],
     }
 
 L = {}
@@ -71,8 +74,9 @@ for pid, g in dataguru.items():
     registered[key] = {"rent": [{"date": t["date"][:10], "amount": int(float(t["amount"])), "size": t["size"]} for t in tx.get("rent", [])],
                        "sale": [{"date": t["date"][:10], "amount": int(float(t["amount"])), "size": t["size"]} for t in tx.get("buy", [])]}
     kind = "rent" if "/rent/" in json.dumps(g) or pid in {str(p["id"]) for p in raw["rent"]} else "sale"
-    tr = (g.get("trends") or {}).get("graph", {}).get("1Y")
-    if tr: trends.setdefault((kind, int(g.get("beds") or 0)), [{"period": t["period"], "tower": t.get("towerPrice"), "community": t.get("communityPrice")} for t in tr])
+    graph = (g.get("trends") or {}).get("graph", {})
+    if graph.get("1Y"):
+        trends.setdefault((kind, int(g.get("beds") or 0)), {tf: [{"period": t["period"], "tower": t.get("towerPrice"), "community": t.get("communityPrice")} for t in pts] for tf, pts in graph.items() if pts})
     building = building or g.get("building")
 
 def registered_for(x):
