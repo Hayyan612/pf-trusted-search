@@ -11,7 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { AskAgents } from "@/components/ask-agents";
 import { StatusPill } from "@/components/status-pill";
-import { bedsLabel, budgetLabel, moveInLabel, type Brief } from "@/lib/brief";
+import { bedsLabel, budgetLabel, extraTags, moveInLabel, type Brief } from "@/lib/brief";
 import { saveBrief } from "@/lib/brief-store";
 import { getListing, priceLine, type Severity } from "@/lib/data";
 import { cn } from "@/lib/utils";
@@ -60,7 +60,7 @@ function ToolCard({ part }: { part: { type: string; state?: string; toolCallId?:
       <Card className="gap-2 py-3"><CardContent className="space-y-2 px-3">
         <div className="text-[13px] font-medium">Brief updated · {counts.fit} flats fit, {counts.trusted} look genuine</div>
         <div className="flex flex-wrap gap-1">
-          {[b.purpose === "rent" ? "Rent" : "Buy", budgetLabel(b), bedsLabel(b.beds), b.furnished === "any" ? "Any furnishing" : b.furnished === "yes" ? "Furnished" : "Unfurnished", `Move in: ${moveInLabel(b.moveIn)}`, ...b.mustHaves.map((m) => m[0].toUpperCase() + m.slice(1))].map((t) => (
+          {[b.purpose === "rent" ? "Rent" : "Buy", budgetLabel(b), bedsLabel(b.beds), b.furnished === "any" ? "Any furnishing" : b.furnished === "yes" ? "Furnished" : "Unfurnished", `Move in: ${moveInLabel(b.moveIn)}`, ...extraTags(b), ...b.mustHaves.map((m) => m[0].toUpperCase() + m.slice(1))].map((t) => (
             <Badge key={t} variant="secondary" className="font-normal">{t}</Badge>
           ))}
         </div>

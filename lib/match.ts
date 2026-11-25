@@ -39,13 +39,27 @@ export function matchBrief(brief: Brief) {
       if (found) fits.push(m[0].toUpperCase() + m.slice(1));
       else toAsk.push(m === "pets" ? "Are pets allowed?" : `Does it have ${m === "parking" ? "parking" : m === "maid's room" ? "a maid's room" : `a ${m}`}?`);
     }
-    if (brief.moveIn && l.checks.some((c) => c.code === "tenanted" || c.code === "available_later")) toAsk.push("Will it be free by your move-in date?");
+    const tenanted = l.checks.some((c) => c.code === "tenanted");
+    if (brief.purpose === "buy" && brief.use === "invest") {
+      if (tenanted) {
+        fits.push("Tenanted: rent from day one");
+        toAsk.push("What is the current rent, and when does the lease end?");
+      } else toAsk.push("What rent does a flat like this get?");
+    } else if (brief.moveIn && brief.moveIn !== "flexible" && (tenanted || l.checks.some((c) => c.code === "available_later"))) {
+      toAsk.push("Will it be free by your move-in date?");
+    }
+    if (brief.purpose === "buy") {
+      toAsk.push("What are the yearly service charges?");
+      if (brief.financing === "mortgage") toAsk.push("Is the seller fine with a mortgage buyer?");
+    }
+    if (brief.purpose === "rent" && brief.household === "sharing") toAsk.push("Does the landlord allow sharing?");
+    if (brief.purpose === "rent" && brief.maxCheques) toAsk.push(`Can I pay in ${brief.maxCheques} ${brief.maxCheques === 1 ? "cheque" : "cheques"}?`);
     if (l.status === "hide") misses.push("Likely misleading");
 
     const trust = l.status === "ok" ? 3 : l.status === "ask" ? 1.5 : 0;
     const priceScore = l.vsRegistered == null ? 0 : Math.max(-1.5, Math.min(1.5, -l.vsRegistered / 10));
     const fresh = l.ageDays != null && l.ageDays <= 30 ? 0.5 : 0;
-    const score = trust * 2 + fits.length - toAsk.length * 0.4 - misses.length * 5 + priceScore + fresh;
+    const score = trust * 2 + fits.length - Math.min(toAsk.length, 3) * 0.4 - misses.length * 5 + priceScore + fresh;
     all.push({ listing: l, score, fits, toAsk, misses });
   }
   all.sort((a, b) => b.score - a.score);

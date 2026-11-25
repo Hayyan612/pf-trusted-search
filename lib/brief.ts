@@ -12,11 +12,26 @@ export const BriefSchema = z.object({
   mustHaves: z.array(z.enum(MUST_HAVES)).describe("Only things the person said they need"),
   maxCheques: z.number().int().min(1).max(12).nullable().describe("Renters: the most cheques they can pay with, e.g. 4. Larger number = more flexible. null if not said."),
   notes: z.string().max(200).nullable().describe("Anything else in their words that matters, short"),
+  household: z.enum(["single", "couple", "family", "sharing"]).nullable().default(null).describe("Renters: who is moving in. null if not said."),
+  financing: z.enum(["cash", "mortgage"]).nullable().default(null).describe("Buyers: paying cash or with a mortgage. null if not said."),
+  use: z.enum(["live", "invest"]).nullable().default(null).describe("Buyers: to live in, or to rent out as an investment. null if not said."),
 });
 
 export type Brief = z.infer<typeof BriefSchema>;
 
-export const EMPTY_BRIEF: Brief = { purpose: "rent", budgetMax: null, beds: [], moveIn: null, furnished: "any", mustHaves: [], maxCheques: null, notes: null };
+export const EMPTY_BRIEF: Brief = { purpose: "rent", budgetMax: null, beds: [], moveIn: null, furnished: "any", mustHaves: [], maxCheques: null, notes: null, household: null, financing: null, use: null };
+
+/** The essentials Scout asks about when the person's words leave them out. */
+export function missingEssentials(b: Brief): ("budget" | "beds" | "moveIn" | "household" | "financing" | "use")[] {
+  const out: ("budget" | "beds" | "moveIn" | "household" | "financing" | "use")[] = [];
+  if (!b.budgetMax) out.push("budget");
+  if (!b.beds.length) out.push("beds");
+  if (!b.moveIn) out.push("moveIn");
+  if (b.purpose === "rent" && !b.household) out.push("household");
+  if (b.purpose === "buy" && !b.use) out.push("use");
+  if (b.purpose === "buy" && !b.financing) out.push("financing");
+  return out;
+}
 
 const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
 
@@ -50,16 +65,36 @@ export function parseBriefRules(text: string, today = new Date("2026-11-25")): B
     const y = mi < today.getMonth() ? today.getFullYear() + 1 : today.getFullYear();
     b.moveIn = `${y}-${String(mi + 1).padStart(2, "0")}`;
   }
+  if (/family|kids|children/.test(t)) b.household = "family";
+  else if (/partner|wife|husband|couple|girlfriend|boyfriend/.test(t)) b.household = "couple";
+  else if (/sharing|flatmate|roommate/.test(t)) b.household = "sharing";
+  else if (/\b(just me|alone|myself|single)\b/.test(t)) b.household = "single";
+  if (/mortgage|loan|finance/.test(t)) b.financing = "mortgage";
+  else if (/\bcash\b/.test(t)) b.financing = "cash";
+  if (/invest|rental income|yield|rent it out|roi/.test(t)) b.use = "invest";
+  else if (/live in|to live|for us|for my family|end[- ]user/.test(t) && b.purpose === "buy") b.use = "live";
   const ch = t.match(/(\d{1,2})\s*cheques?/);
   if (ch) b.maxCheques = Number(ch[1]);
   return b;
 }
 
 export function moveInLabel(m: string | null) {
-  if (!m) return "Flexible";
+  if (!m || m === "flexible") return "Flexible";
   if (m === "asap") return "As soon as possible";
   const [y, mo] = m.split("-").map(Number);
   return new Date(y, mo - 1, 1).toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+}
+
+export const HOUSEHOLD_LABEL = { single: "Just me", couple: "A couple", family: "A family", sharing: "Sharing" } as const;
+export const FINANCING_LABEL = { cash: "Cash", mortgage: "Mortgage" } as const;
+export const USE_LABEL = { live: "To live in", invest: "To rent out" } as const;
+
+export function extraTags(b: Brief): string[] {
+  const t: string[] = [];
+  if (b.purpose === "rent" && b.household) t.push(HOUSEHOLD_LABEL[b.household]);
+  if (b.purpose === "buy" && b.use) t.push(USE_LABEL[b.use]);
+  if (b.purpose === "buy" && b.financing) t.push(FINANCING_LABEL[b.financing]);
+  return t;
 }
 
 export function budgetLabel(b: Brief) {

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { MUST_HAVES, moveInLabel, type Brief } from "@/lib/brief";
+import { FINANCING_LABEL, HOUSEHOLD_LABEL, MUST_HAVES, USE_LABEL, moveInLabel, type Brief } from "@/lib/brief";
 
 const ON = "data-[state=on]:border-primary data-[state=on]:bg-primary data-[state=on]:text-primary-foreground";
 const MOVE_OPTIONS = ["asap", "2026-12", "2027-01", "2027-02", "2027-03", "2027-04", "2027-06"];
@@ -57,10 +57,10 @@ export function BriefEditor({ initial, onSave, saveLabel = "Save brief" }: { ini
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label>Move in</Label>
-          <Select value={b.moveIn ?? "flex"} onValueChange={(v) => set("moveIn", v === "flex" ? null : v)}>
+          <Select value={b.moveIn ?? "flexible"} onValueChange={(v) => set("moveIn", v)}>
             <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="flex">Flexible</SelectItem>
+              <SelectItem value="flexible">Flexible</SelectItem>
               {MOVE_OPTIONS.map((m) => <SelectItem key={m} value={m}>{moveInLabel(m)}</SelectItem>)}
             </SelectContent>
           </Select>
@@ -81,6 +81,38 @@ export function BriefEditor({ initial, onSave, saveLabel = "Save brief" }: { ini
           {MUST_HAVES.map((m) => <ToggleGroupItem key={m} value={m} className={`capitalize ${ON}`}>{m}</ToggleGroupItem>)}
         </ToggleGroup>
       </div>
+
+      {b.purpose === "rent" && (
+        <div className="space-y-2">
+          <Label>Who is moving in?</Label>
+          <ToggleGroup type="single" variant="outline" value={b.household ?? ""} onValueChange={(v) => set("household", (v || null) as Brief["household"])} className="w-full">
+            {(Object.keys(HOUSEHOLD_LABEL) as (keyof typeof HOUSEHOLD_LABEL)[]).map((k) => (
+              <ToggleGroupItem key={k} value={k} className={`flex-1 ${ON}`}>{HOUSEHOLD_LABEL[k]}</ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+        </div>
+      )}
+
+      {b.purpose === "buy" && (
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label>Buying to</Label>
+            <ToggleGroup type="single" variant="outline" value={b.use ?? ""} onValueChange={(v) => set("use", (v || null) as Brief["use"])} className="w-full">
+              {(Object.keys(USE_LABEL) as (keyof typeof USE_LABEL)[]).map((k) => (
+                <ToggleGroupItem key={k} value={k} className={`flex-1 ${ON}`}>{USE_LABEL[k]}</ToggleGroupItem>
+              ))}
+            </ToggleGroup>
+          </div>
+          <div className="space-y-2">
+            <Label>Paying with</Label>
+            <ToggleGroup type="single" variant="outline" value={b.financing ?? ""} onValueChange={(v) => set("financing", (v || null) as Brief["financing"])} className="w-full">
+              {(Object.keys(FINANCING_LABEL) as (keyof typeof FINANCING_LABEL)[]).map((k) => (
+                <ToggleGroupItem key={k} value={k} className={`flex-1 ${ON}`}>{FINANCING_LABEL[k]}</ToggleGroupItem>
+              ))}
+            </ToggleGroup>
+          </div>
+        </div>
+      )}
 
       {b.purpose === "rent" && (
         <div className="space-y-2">

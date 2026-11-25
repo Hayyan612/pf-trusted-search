@@ -11,8 +11,9 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "
 import { Textarea } from "@/components/ui/textarea";
 import { BriefEditor } from "@/components/brief-editor";
 import { TopFive } from "@/components/top-five";
+import { QuickQuestions } from "@/components/quick-questions";
 import { ScoutChat } from "@/components/scout-chat";
-import { EMPTY_BRIEF, bedsLabel, budgetLabel, moveInLabel, type Brief } from "@/lib/brief";
+import { EMPTY_BRIEF, bedsLabel, budgetLabel, extraTags, missingEssentials, moveInLabel, type Brief } from "@/lib/brief";
 import { saveBrief, useBrief } from "@/lib/brief-store";
 import { useSession } from "@/lib/auth-client";
 
@@ -26,6 +27,7 @@ function Onboarding({ onDone }: { onDone: (b: Brief) => void }) {
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [draft, setDraft] = useState<Brief | null>(null);
+  const [asked, setAsked] = useState(false);
 
   const read = async (value: string) => {
     if (!value.trim()) return;
@@ -34,7 +36,7 @@ function Onboarding({ onDone }: { onDone: (b: Brief) => void }) {
       const r = await fetch("/api/brief/parse", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: value }) });
       const j = await r.json();
       if (!r.ok) throw new Error(j.error);
-      setDraft({ ...j.brief, notes: j.brief.notes ?? null });
+      setDraft({ ...EMPTY_BRIEF, ...j.brief, notes: j.brief.notes ?? null });
     } catch {
       toast.error("Scout could not read that. Fill in the form instead.");
       setDraft(EMPTY_BRIEF);
@@ -43,6 +45,9 @@ function Onboarding({ onDone }: { onDone: (b: Brief) => void }) {
     }
   };
 
+  if (draft && !asked && missingEssentials(draft).length > 0) {
+    return <QuickQuestions draft={draft} onDone={(b) => { setDraft(b); setAsked(true); }} />;
+  }
   if (draft) {
     return (
       <Card className="mx-auto max-w-xl motion-safe:animate-in motion-safe:fade-in">
@@ -82,7 +87,7 @@ function Onboarding({ onDone }: { onDone: (b: Brief) => void }) {
         <Button size="lg" className="w-full" disabled={busy || !text.trim()} onClick={() => read(text)}>
           {busy ? <><Loader2 className="animate-spin" /> Reading…</> : "Continue"}
         </Button>
-        <button type="button" className="w-full text-center text-[13px] text-muted-foreground underline" onClick={() => setDraft(EMPTY_BRIEF)}>
+        <button type="button" className="w-full text-center text-[13px] text-muted-foreground underline" onClick={() => { setAsked(true); setDraft(EMPTY_BRIEF); }}>
           Skip and fill in a form
         </button>
       </CardContent>
@@ -95,7 +100,7 @@ function BriefSummary({ brief, onEdit }: { brief: Brief; onEdit: () => void }) {
   const tags = [
     brief.purpose === "rent" ? "Rent" : "Buy", budgetLabel(brief), bedsLabel(brief.beds),
     brief.furnished === "any" ? "Any furnishing" : brief.furnished === "yes" ? "Furnished" : "Unfurnished",
-    `Move in: ${moveInLabel(brief.moveIn)}`, ...brief.mustHaves.map((m) => m[0].toUpperCase() + m.slice(1)), ...(brief.maxCheques ? [`Up to ${brief.maxCheques} cheques`] : []),
+    `Move in: ${moveInLabel(brief.moveIn)}`, ...extraTags(brief), ...brief.mustHaves.map((m) => m[0].toUpperCase() + m.slice(1)), ...(brief.maxCheques ? [`Up to ${brief.maxCheques} cheques`] : []),
   ];
   return (
     <Card>
