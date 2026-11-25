@@ -24,6 +24,10 @@ Try:
 | Message to each agent | Code (`lib/message.ts`) from the brief, the flat's open questions and the suggested offer | Readable, copyable, the person sees exactly what is sent |
 | Chat ("only furnished", "why is #1 top?") | The LLM picks from 5 tools; each result renders as a shadcn component filled from real data | Generative UI without letting the model invent a listing or price. |
 | Contacting agents | The person, after adding contact details and ticking consent | Nothing is sent without a tap. |
+| Questions on a listing (Scout panel beside the ad) | Code answers one-tap questions from the ad text with a quote. Free-text questions: the LLM splits and rewrites them and may quote the ad; every quote is checked against the ad text in code (`lib/custom-questions.ts`) | Answer from the ad before bothering the agent; the person picks what is sent |
+| Negotiation brief | The LLM, given only registered deals, other ads and TrueUnit's checks; code rejects numbers out of order; rules fallback (`lib/negotiation-brief.ts`) | Saves money with evidence, cannot invent a price |
+| What is known about each flat | Code (`lib/facts.ts`): agent confirmed, checked (data or a viewing), not verified, conflicting | An agent's answer is their word, not proof |
+| Agent replies, nudges, viewing confirmations, offer answers | **Simulated** in the browser (`components/agent-simulator.tsx`) and labelled so | Shows the full loop; the real version needs Property Finder's lead inbox |
 
 ## Accounts (optional)
 
