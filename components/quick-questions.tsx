@@ -21,7 +21,7 @@ function Chips<T extends string | number>({ options, value, onPick, label }: { o
           key={String(o)}
           type="button"
           onClick={() => onPick(o)}
-          className={cn("rounded-full border px-3.5 py-1.5 text-[14px] transition-colors", value === o ? "border-primary bg-primary text-primary-foreground" : "hover:border-primary/50 hover:bg-accent")}
+          className={cn("rounded-full border px-3.5 py-1.5 text-[14px] transition-[background-color,border-color,color,transform] duration-200 active:scale-95", value === o ? "border-primary bg-primary text-primary-foreground shadow-sm" : "hover:-translate-y-0.5 hover:border-primary/50 hover:bg-accent")}
         >
           {label(o)}
         </button>
@@ -40,7 +40,7 @@ export function QuickQuestions({ draft, onDone }: { draft: Brief; onDone: (b: Br
   return (
     <Card className="mx-auto max-w-xl motion-safe:animate-in motion-safe:fade-in">
       <CardHeader>
-        <CardTitle>A few quick questions</CardTitle>
+        <CardTitle className="font-display text-[28px] font-normal">A few quick questions</CardTitle>
         <CardDescription>So Scout only shows flats that work for you. Skip any you are not sure about.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-5">

@@ -13,7 +13,7 @@ const has = (l: Listing, re: RegExp) => re.test(`${l.title ?? ""} ${l.descriptio
 
 /** Deterministic: filters to the brief, then ranks by trust, fit and price against registered deals. No LLM. */
 export function matchBrief(brief: Brief) {
-  const kind = brief.purpose === "buy" ? "sale" : "rent";
+  const kind: "rent" | "sale" = brief.purpose === "buy" ? "sale" : "rent";
   const units = unitsFor(kind);
   const all: Match[] = [];
   for (const { listing: l } of units) {

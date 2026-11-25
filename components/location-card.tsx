@@ -104,12 +104,12 @@ export function LocationCard({ priorities = [], workplace = null, maxCommuteMin 
           </div>
         )}
 
-        <ul className="grid gap-2 sm:grid-cols-2">
+        <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {kinds.map((k) => {
             const p = places.find((x) => x.kind === k);
             const wanted = priorities.includes(k);
             return (
-              <li key={k} className="flex items-center gap-2 rounded-lg border px-3 py-2 text-[13px]">
+              <li key={k} className="flex min-w-0 items-center gap-2 rounded-lg border px-3 py-2 text-[13px]">
                 <span className="size-2.5 shrink-0 rounded-full" style={{ background: COLORS[k] }} />
                 <span className="min-w-0 flex-1 truncate">
                   <span className="font-medium">{NEARBY_KINDS[k].label}</span>

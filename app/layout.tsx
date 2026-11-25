@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Plus_Jakarta_Sans, Instrument_Serif } from "next/font/google";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Toaster } from "@/components/ui/sonner";
@@ -10,7 +10,8 @@ import { ShortlistSync } from "@/components/shortlist-sync";
 import { BriefSync } from "@/components/brief-sync";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const sans = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-sans" });
+const display = Instrument_Serif({ subsets: ["latin"], weight: "400", style: ["normal", "italic"], variable: "--font-display" });
 
 export const metadata: Metadata = {
   title: "TrueUnit by Scout",
@@ -24,7 +25,7 @@ const AUTH_ENABLED = process.env.NEXT_PUBLIC_AUTH_ENABLED !== "false";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={`${sans.variable} ${display.variable}`}>
       <body className="bg-white antialiased">
         <header className="sticky top-0 z-30 border-b bg-white/95 backdrop-blur">
           <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-6 px-4 md:h-16 md:px-8">

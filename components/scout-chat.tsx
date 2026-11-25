@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useChat } from "@ai-sdk/react";
+import { AnimatePresence, motion } from "motion/react";
 import { DefaultChatTransport } from "ai";
 import { ArrowUp, CalendarCheck, Loader2, ShieldAlert, ShieldCheck, ShieldX, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -125,17 +126,25 @@ export function ScoutChat({ brief, enabled }: { brief: Brief; enabled: boolean }
   return (
     <Card className="gap-3 py-4">
       <CardContent className="space-y-3 px-4">
-        <div className="flex items-center gap-2 text-[14px] font-semibold"><Sparkles className="size-4 text-primary" /> Ask Scout</div>
+        <div className="flex items-center gap-2"><Sparkles className="size-4 text-primary" /><span className="font-display text-[24px] leading-none">Ask Scout</span></div>
         {messages.length === 0 && (
           <div className="flex flex-wrap gap-2">
             {SUGGESTIONS.map((s) => (
-              <button key={s} type="button" onClick={() => send(s)} className="rounded-full border border-primary/25 px-3 py-1.5 text-[13px] text-primary transition-colors hover:bg-accent">{s}</button>
+              <motion.button key={s} type="button" whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} onClick={() => send(s)} className="rounded-full border border-primary/25 px-3 py-1.5 text-[13px] text-primary transition-colors hover:bg-accent">{s}</motion.button>
             ))}
           </div>
         )}
         <div className="space-y-3">
+          <AnimatePresence initial={false}>
           {messages.map((m) => (
-            <div key={m.id} className={cn("space-y-2 motion-safe:animate-in motion-safe:fade-in", m.role === "user" && "flex justify-end")}>
+            <motion.div
+              key={m.id}
+              layout="position"
+              initial={{ opacity: 0, y: 10, x: m.role === "user" ? 12 : -12 }}
+              animate={{ opacity: 1, y: 0, x: 0 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className={cn("space-y-2", m.role === "user" && "flex justify-end")}
+            >
               {m.parts.map((p, i) => {
                 if (p.type === "text") {
                   return (
@@ -145,9 +154,16 @@ export function ScoutChat({ brief, enabled }: { brief: Brief; enabled: boolean }
                 if (p.type.startsWith("tool-")) return <ToolCard key={i} part={p as never} />;
                 return null;
               })}
-            </div>
+            </motion.div>
           ))}
-          {status === "submitted" && <div className="flex items-center gap-2 text-[13px] text-muted-foreground"><Loader2 className="size-3.5 animate-spin" /> Scout is thinking…</div>}
+          </AnimatePresence>
+          {status === "submitted" && (
+            <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="flex w-fit items-center gap-1 rounded-2xl bg-muted px-3 py-2.5" aria-label="Scout is thinking">
+              {[0, 1, 2].map((i) => (
+                <motion.span key={i} className="size-1.5 rounded-full bg-muted-foreground" animate={{ y: [0, -4, 0], opacity: [0.4, 1, 0.4] }} transition={{ repeat: Infinity, duration: 0.9, delay: i * 0.15 }} />
+              ))}
+            </motion.div>
+          )}
           {error && <p className="text-[13px] text-red-600">Scout could not answer just now. Try again, or edit your brief above.</p>}
           <div ref={end} />
         </div>
