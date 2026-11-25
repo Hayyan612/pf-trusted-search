@@ -5,6 +5,7 @@ import { StatusPill } from "@/components/status-pill";
 import { ConfirmBar } from "@/components/confirm-drawer";
 import { getListing, getUnit, priceLine, aed, type Severity } from "@/lib/data";
 import { cn } from "@/lib/utils";
+import { FadeImage } from "@/components/fade-image";
 
 const ICON: Record<Severity, typeof ShieldCheck> = { ok: ShieldCheck, ask: ShieldAlert, hide: ShieldX };
 const TONE: Record<Severity, string> = { ok: "text-emerald-600", ask: "text-amber-600", hide: "text-red-600" };
@@ -33,8 +34,7 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
         </Link>
         <div className="flex snap-x snap-mandatory gap-1 overflow-x-auto md:grid md:grid-cols-3 md:grid-rows-2 md:gap-2 md:overflow-visible">
           {l.images.map((src, i) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img key={src} src={src} alt="" className={cn("aspect-[4/3] w-[88%] shrink-0 snap-start object-cover md:size-full md:rounded-xl", i === 0 && "md:col-span-2 md:row-span-2")} />
+            <FadeImage key={src} src={src} alt="" className={cn("aspect-[4/3] w-[88%] shrink-0 snap-start object-cover md:size-full md:rounded-xl", i === 0 && "md:col-span-2 md:row-span-2")} />
           ))}
         </div>
       </div>
@@ -62,10 +62,10 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
           </div>
           <p className="text-[14px]">{HEADLINE[l.status]}</p>
           <ul className="space-y-3">
-            {checks.map((c) => {
+            {checks.map((c, i) => {
               const Icon = ICON[c.severity];
               return (
-                <li key={c.code + (c.other ?? "")} className="flex gap-3">
+                <li key={c.code + (c.other ?? "")} className="flex gap-3 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-left-1 motion-safe:fill-mode-both motion-safe:duration-300" style={{ animationDelay: `${120 + i * 60}ms` }}>
                   <Icon className={cn("mt-0.5 size-5 shrink-0", TONE[c.severity])} />
                   <div className="text-[14px]">
                     <div className="font-medium">{c.label}</div>

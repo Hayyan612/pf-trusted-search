@@ -23,7 +23,7 @@ export function TopNav() {
         <Link
           key={l.href}
           href={l.href}
-          className={cn("rounded-full px-3 py-1.5 text-[14px] text-foreground/80 hover:bg-accent", l.active && "bg-accent font-medium text-primary")}
+          className={cn("rounded-full px-3 py-1.5 text-[14px] text-foreground/80 transition-colors duration-200 hover:bg-accent", l.active && "bg-accent font-medium text-primary")}
         >
           {l.label}
         </Link>

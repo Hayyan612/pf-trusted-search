@@ -8,7 +8,7 @@ type SP = Promise<{ kind?: string; beds?: string; view?: string }>;
 
 function chip(active: boolean) {
   return cn(
-    "rounded-full border px-3 py-1.5 text-[13px] whitespace-nowrap",
+    "rounded-full border px-3 py-1.5 text-[13px] whitespace-nowrap transition-colors duration-200 hover:border-primary/50",
     active ? "border-primary bg-primary text-primary-foreground" : "border-border text-foreground",
   );
 }
@@ -57,10 +57,10 @@ export default async function SearchPage({ searchParams }: { searchParams: SP })
           {s.hidden > 0 && <>, and {s.hidden} look misleading</>}.
         </p>
         <div className="mt-3 grid grid-cols-2 gap-1 rounded-xl bg-white p-1 text-[13px] font-medium">
-          <Link href={q({ view: "flats" })} className={cn("rounded-lg py-2 text-center", view === "flats" ? "bg-primary text-primary-foreground" : "text-muted-foreground")}>
+          <Link href={q({ view: "flats" })} className={cn("rounded-lg py-2 text-center transition-colors duration-200", view === "flats" ? "bg-primary text-primary-foreground" : "text-muted-foreground")}>
             Real flats ({s.flats - s.hidden})
           </Link>
-          <Link href={q({ view: "ads" })} className={cn("rounded-lg py-2 text-center", view === "ads" ? "bg-primary text-primary-foreground" : "text-muted-foreground")}>
+          <Link href={q({ view: "ads" })} className={cn("rounded-lg py-2 text-center transition-colors duration-200", view === "ads" ? "bg-primary text-primary-foreground" : "text-muted-foreground")}>
             All ads ({s.ads})
           </Link>
         </div>
@@ -72,17 +72,17 @@ export default async function SearchPage({ searchParams }: { searchParams: SP })
       <div className="mt-4 grid gap-3 px-4 sm:grid-cols-2 md:mt-0 md:px-0 xl:grid-cols-3">
         {view === "flats" ? (
           <>
-            {visible.map(({ listing, unit }) => (
-              <ListingCard key={unit.id} listing={listing} unit={unit} showUnit />
+            {visible.map(({ listing, unit }, i) => (
+              <ListingCard key={unit.id} listing={listing} unit={unit} showUnit index={i} />
             ))}
             {hidden.length > 0 && (
               <details className="group rounded-2xl border p-3 sm:col-span-2 xl:col-span-3">
                 <summary className="flex cursor-pointer list-none items-center justify-between text-[14px] font-medium">
                   {hidden.length} hidden as likely misleading
-                  <ChevronDown className="size-4 transition group-open:rotate-180" />
+                  <ChevronDown className="size-4 transition-transform duration-200 group-open:rotate-180" />
                 </summary>
                 <p className="mt-2 text-[13px] text-muted-foreground">Hidden, not deleted. Open one to see why. You can still contact the agent.</p>
-                <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                <div className="mt-3 grid gap-3 motion-safe:animate-in motion-safe:fade-in sm:grid-cols-2 xl:grid-cols-3">
                   {hidden.map(({ listing, unit }) => (
                     <ListingCard key={unit.id} listing={listing} unit={unit} showUnit />
                   ))}
@@ -91,7 +91,7 @@ export default async function SearchPage({ searchParams }: { searchParams: SP })
             )}
           </>
         ) : (
-          ads.map((l) => <ListingCard key={l.id} listing={l} />)
+          ads.map((l, i) => <ListingCard key={l.id} listing={l} index={i} />)
         )}
       </div>
     </div>

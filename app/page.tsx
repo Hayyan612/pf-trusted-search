@@ -38,7 +38,7 @@ export default function Home() {
             <Link
               key={p.q}
               href={p.href}
-              className="rounded-full border border-primary/25 px-3 py-1.5 text-[13px] text-primary hover:bg-accent"
+              className="rounded-full border border-primary/25 px-3 py-1.5 text-[13px] text-primary transition-colors duration-200 hover:bg-accent active:scale-[0.98]"
             >
               {p.q}
             </Link>
@@ -47,14 +47,14 @@ export default function Home() {
       </section>
 
       <section className="grid grid-cols-2 gap-3 md:col-start-1">
-        <Link href="/search?kind=rent" className="rounded-2xl bg-primary p-4 text-primary-foreground">
+        <Link href="/search?kind=rent" className="rounded-2xl bg-primary p-4 text-primary-foreground transition duration-200 hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98] motion-reduce:hover:translate-y-0">
           <div className="text-[13px] opacity-80">I want to</div>
           <div className="text-lg font-semibold">Rent</div>
           <div className="mt-3 flex items-center gap-1 text-[13px]">
             {rent.ads} ads <ArrowRight className="size-3" /> {rent.flats} flats
           </div>
         </Link>
-        <Link href="/search?kind=sale" className="rounded-2xl border p-4">
+        <Link href="/search?kind=sale" className="rounded-2xl border p-4 transition duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md active:scale-[0.98] motion-reduce:hover:translate-y-0">
           <div className="text-[13px] text-muted-foreground">I want to</div>
           <div className="text-lg font-semibold">Buy</div>
           <div className="mt-3 flex items-center gap-1 text-[13px] text-muted-foreground">

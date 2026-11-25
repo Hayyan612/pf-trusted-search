@@ -49,7 +49,7 @@ export default function ShortlistPage() {
         if (!l) return null;
         const r = it.reply;
         return (
-          <div key={it.id} className="overflow-hidden rounded-2xl border">
+          <div key={it.id} className="overflow-hidden rounded-2xl border transition-shadow hover:shadow-sm motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-300">
             <Link href={`/listing/${l.id}`} className="flex gap-3 p-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={l.images[0]} alt="" className="size-16 rounded-lg object-cover" />
@@ -65,7 +65,7 @@ export default function ShortlistPage() {
                 </div>
               )}
               {r && (
-                <div className="space-y-2">
+                <div className="space-y-2 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-1 motion-safe:duration-500">
                   <div className="flex items-center gap-2 font-medium">
                     {r.outcome === "confirmed" && <><CheckCircle2 className="size-4 text-emerald-600" /> Confirmed by the agent</>}
                     {r.outcome === "changed" && <><AlertCircle className="size-4 text-amber-600" /> Answered, with changes</>}

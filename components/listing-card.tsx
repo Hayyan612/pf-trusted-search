@@ -3,19 +3,24 @@ import { BedDouble, Bath, Maximize, BadgeCheck, Layers } from "lucide-react";
 import { StatusPill } from "@/components/status-pill";
 import { priceLine, type Listing, type Unit } from "@/lib/data";
 import { cn } from "@/lib/utils";
+import { FadeImage } from "@/components/fade-image";
 
-export function ListingCard({ listing: l, unit, showUnit }: { listing: Listing; unit?: Unit; showUnit?: boolean }) {
+export function ListingCard({ listing: l, unit, showUnit, index = 0 }: { listing: Listing; unit?: Unit; showUnit?: boolean; index?: number }) {
   const reasons = l.checks.filter((c) => c.severity !== "ok").slice(0, 2);
   const multi = showUnit && unit && unit.listingIds.length > 1;
   return (
     <Link
       href={`/listing/${l.id}`}
-      className={cn("block overflow-hidden rounded-2xl border bg-white shadow-xs", l.status === "hide" && "opacity-70")}
+      style={{ animationDelay: `${Math.min(index, 8) * 45}ms` }}
+      className={cn(
+        "group block overflow-hidden rounded-2xl border bg-white shadow-xs transition duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-[0.99]",
+        "motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:fill-mode-both motion-safe:duration-300 motion-reduce:hover:translate-y-0",
+        l.status === "hide" && "opacity-70",
+      )}
     >
-      <div className="relative aspect-[16/9] bg-muted">
+      <div className="relative aspect-[16/9] overflow-hidden bg-muted">
         {l.images[0] && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={l.images[0]} alt="" className="size-full object-cover" loading="lazy" />
+          <FadeImage src={l.images[0]} alt="" loading="lazy" className="size-full object-cover transition-[opacity,transform] duration-500 group-hover:scale-[1.03] motion-reduce:group-hover:scale-100" />
         )}
         <div className="absolute top-2 left-2 flex gap-1">
           {l.verified && (

@@ -26,7 +26,7 @@ export function BottomNav() {
               <Link
                 href={href}
                 className={cn(
-                  "relative flex flex-col items-center gap-0.5 py-2.5 text-[11px] font-medium text-muted-foreground",
+                  "relative flex flex-col items-center gap-0.5 py-2.5 text-[11px] font-medium text-muted-foreground transition-colors duration-200 active:scale-95",
                   active && "text-primary",
                 )}
               >
