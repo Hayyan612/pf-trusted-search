@@ -30,4 +30,4 @@ How Property Finder already handles it:
 - **Verified badge** (quality control team, at posting), **regular availability checks** and the **Listing Action Tracker**, **SuperAgent** ranking (response time, quality score 85-90%, reported listings), removal for rule breaches, and **100% DLD permit compliance** since Nov 2025.
 - Its own listing data already carries a quality score, an availability flag and an "under offer elsewhere" flag, but people searching do not see a combined view.
 
-What this says: everyone checks the **ad** when it is posted. Nobody checks the **flat** at the moment the person decides, and nobody collapses many ads into one real flat. In our audit, all 11 listings we would hide carry the Verified badge.
+What this says: everyone checks the **ad** when it is posted. Nobody checks the **flat** at the moment the person decides, and nobody collapses many ads into one real flat. In our audit, all 6 listings TrueUnit marks likely misleading carry the Verified badge.
