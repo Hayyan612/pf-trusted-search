@@ -4,7 +4,7 @@ A Scout feature for one person searching. It groups ads into real flats, flags t
 
 ## The problem behind the problem
 
-**What the audit showed.** I checked all 242 live ads in Princess Tower, Dubai Marina (144 rent, 98 sale) on 25 Nov 2026. 99 of 242 (41%) need a question before they are worth a call: the same flat listed again at another price, also listed for sale or rent, "tenanted" in the text, holiday-home pricing shown as a yearly rent, or live for 90+ days. 6 use photos of a different flat. Identical photos, re-watermarked by two agencies, sell one flat at AED 2.0M and 2.1M. **All 6 likely-misleading ads carry the Verified badge.**
+**What the audit showed.** I checked all 242 live ads in Princess Tower, Dubai Marina (144 rent, 98 sale) on 25 Nov 2026. 99 of 242 (41%) need a question before they are worth a call: the same flat listed again at another price, also listed for sale or rent, "tenanted" in the text, holiday-home pricing shown as a yearly rent, or live for 90+ days. 6 use photos of a different flat. Identical photos, re-watermarked by two agencies, sell one flat at AED 2.0M and 2.1M. **All 6 likely-misleading ads carry the Verified badge.** Against registered deals (DLD data via DataGuru), the typical rental ad asks 8% more than the same size actually rented for, and 58 of 144 rental ads ask 15%+ more, while registered 2-bed rents in the tower fell from AED 153,750 to 123,750 in a year. Ads lag the market.
 
 **Why it exists.** A listing is an ad that buys calls, not stock. Agents pay for visibility and are judged on leads, so a second copy of a flat, a low price or a let flat left online costs them nothing and still brings calls. Property Finder, Bayut and Dubizzle all check the ad when it is posted (Verified, TruCheck, DLD permits). Nobody checks the flat when the person is deciding.
 
@@ -51,7 +51,7 @@ Honest agents get serious leads: a known budget, move-in date and clear question
 | 1 | Real messages to agents through Property Finder's lead inbox and agent app | The whole "ask before I call" loop; answers on record | Internal Property Finder connection |
 | 2 | Agent answers feeding listing rank and SuperAgent score | Makes honesty pay for agents | Internal ranking and SuperAgent systems |
 | 3 | Unit identity from the DLD permit (building, floor, unit) | Duplicates without relying on photos; catches "same photos, different size" | Permit-to-unit data is internal / DLD integration |
-| 4 | Price checks against DLD registered rents and sales | Live ads are a biased benchmark | Government data not connected (allowed to skip) |
+| 4 | Price checks against all DLD registered deals, not just the last 5 per size | The prototype uses the 5 recent rents and sales Property Finder shows per listing (DataGuru); a full history would let it weight by floor, view and date | Internal DataGuru access |
 | 5 | Photo matching across the whole portal at upload | Catch reused photos before they go live, not only in one tower | Engineering help: image pipeline at scale |
 | 6 | Scout understanding requests in plain words, inside Scout's chat | The entry point people already use | Scout's internal API |
 | 7 | Account sync and push notifications between web and app | The web-to-app handoff | Internal accounts and notification systems |

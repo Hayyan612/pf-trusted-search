@@ -28,13 +28,14 @@ When it is not sure, it asks the agent instead of deciding. A wrong "Ask first" 
 - The agent typed the wrong size. McCone (1,189 sq ft) and Seafront (1,305 sq ft) use the same living-room photo. Our rule only saw one shared photo and said "Ask first", but a person can see it is one flat with two sizes. *Hurts the searcher* if the size is wrong. The rule should also flag "same photos, different size" as a question.
 - An agency reuses photos of an identical unit on another floor because the tenant will not allow photos. Honest, but the photos are still not this flat. *Hurts an honest agent* if hidden, so the reason shown says "photos may not show this flat", not "fake".
 
-## 3. Price far below similar flats: ask first
+## 3. Price far below what this size actually rented or sold for: ask first
 
-**Rule.** If the price per sq ft is 15%+ below the median for the same bedrooms and purpose in this tower, ask the agent why.
+**Rule.** Compare the ad with the last registered rents or sales for the same size in this tower (DLD records, shown on Property Finder through DataGuru). 15%+ below the median: ask the agent why. 15%+ above: shown as information, not a warning ("room to negotiate"). If there are no registered deals, fall back to the median of today's live ads per sq ft.
 
 **Where it is wrong.**
 - It is a real deal: an owner who needs to let fast, a low floor with no view, unfurnished. *Hurts an honest agent*: the listing gets a question instead of a call. That is why it is never hidden on price alone.
-- The median comes from live ads, not registered deals. If most ads in a tower are inflated, a fair price looks "low". *Hurts the searcher and the honest agent*. Fix: use DLD registered rents and sales (not connected in the prototype).
+- Registered deals lag the market. Some sales in our data are from 2023-2024, and 2-bed rents in the tower fell about 20% in a year (DataGuru trend). In a falling market a fair new price can look "low" next to old deals. *Hurts an honest agent.* Fix: weight recent deals more and show the dates, which the listing page does.
+- Same size is not the same flat: floor, view and furnishing move the price. *Hurts both sides* when a high-floor sea view is compared with a low-floor pool view.
 
 ## 4. Same flat for rent and for sale: ask first
 
