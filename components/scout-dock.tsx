@@ -2,11 +2,12 @@
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Sparkles, X } from "lucide-react";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ListingScout } from "@/components/listing-scout";
+import { LogoMark } from "@/components/logo";
 import { AD_QUESTIONS } from "@/lib/ad-answers";
 import type { Listing } from "@/lib/data";
 
@@ -25,7 +26,7 @@ function useDesktop() {
 function Title({ listing }: { listing: Listing }) {
   return (
     <div className="flex min-w-0 flex-1 items-center gap-2">
-      <span className="grid size-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary to-[var(--brand)] text-white shadow"><Sparkles className="size-4" /></span>
+      <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary/[0.07]"><LogoMark className="size-5" /></span>
       <div className="min-w-0">
         <div className="text-[15px] font-semibold">Ask Scout about this flat</div>
         <div className="truncate text-[12px] text-muted-foreground">Answers from the ad. If it does not say, Scout asks {listing.agent}.</div>
@@ -79,8 +80,16 @@ export function ScoutDock({ listing }: { listing: Listing }) {
       <AnimatePresence>
         {!open && (
           <motion.div initial={{ opacity: 0, scale: 0.9, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.25, ease: EASE }} className="fixed right-4 bottom-36 z-40 md:bottom-8">
-            <span className="pointer-events-none absolute inset-0 animate-ping rounded-full bg-primary/30 motion-reduce:hidden" />
-            <Button size="lg" onClick={() => openWith()} className="rounded-full shadow-lg shadow-primary/30"><Sparkles /> Ask Scout</Button>
+            <button
+              type="button"
+              onClick={() => openWith()}
+              className="group flex items-center gap-2.5 rounded-full border border-foreground/10 bg-white/85 py-1.5 pr-4 pl-1.5 text-[14px] font-medium text-foreground shadow-[0_10px_30px_-12px_oklch(0.35_0.12_285/0.45)] backdrop-blur-md transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-[0_16px_40px_-14px_oklch(0.35_0.12_285/0.6)] active:translate-y-0 motion-reduce:hover:translate-y-0"
+            >
+              <span className="grid size-8 place-items-center rounded-full bg-primary/[0.07] transition-colors group-hover:bg-primary/[0.12]">
+                <LogoMark className="size-5" />
+              </span>
+              Ask Scout
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
