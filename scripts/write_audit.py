@@ -21,7 +21,7 @@ def yn(b): return "Yes" if b else "No"
 picked = []
 for x in d["listings"]:
     codes = {c["code"] for c in x["checks"]}
-    if x["id"] in EYE or codes & {"photos_other_unit", "same_unit", "dual_listed", "short_stay", "tenanted", "price_low", "available_later"}:
+    if x["id"] in EYE or codes & {"photos_other_unit", "same_unit", "dual_listed", "short_stay", "tenanted", "price_low", "below_registered", "available_later"}:
         picked.append(x)
 clean = [x for x in d["listings"] if x["status"] == "ok"][:6]
 rows = picked + clean
