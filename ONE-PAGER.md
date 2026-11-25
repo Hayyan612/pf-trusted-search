@@ -54,10 +54,10 @@ My starting guess is about 15% more viewings (if 10 in 100 book one today, that'
 
 ## What I couldn't build
 
-| What | Why it matters | Why not here |
-|---|---|---|
-| Real messages through the lead inbox and agent app | Answers on record. Replies in the prototype are simulated and labelled | Internal systems |
-| Agent answers feeding rank and SuperAgent score | Makes honesty pay | Internal ranking |
-| Unit identity from the DLD permit | Spot duplicates without guessing from photos | DLD and internal data |
-| Full registered-deal history | Weigh price by floor and view, not 5 recent deals | Internal DataGuru access |
-| Photo matching at upload, across the portal | Stop reused photos before they go live | Image pipeline at scale |
+These need Property Finder's own systems, which I don't have access to:
+
+- **Real messages to agents.** In my prototype the agents' replies are pretend, and labelled that way. The real thing would go through Property Finder's agent app.
+- **Rewarding honest agents.** Fast, true answers should push an agent's ads higher. That needs Property Finder's ranking.
+- **Knowing the exact flat.** Every ad has a government permit. Matching ads by permit would spot repeats without guessing from photos.
+- **All past deals, not just 5.** More history would make the "fair price" check much sharper.
+- **Checking photos when an ad is posted.** Catching reused photos before the ad goes live, across the whole site, not just one tower.
