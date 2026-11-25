@@ -4,7 +4,7 @@
 
 ### Fewer, better decisions for people renting or buying in Dubai
 
-A personal assistant inside Property Finder's Scout. It checks the ads before you spend a call,<br>
+A personal assistant for people searching a Dubai property portal. It checks the ads before you spend a call,<br>
 asks every agent only what their ad doesn't say, and puts every answer in one place.<br>
 **The agent stays in the deal.**
 
@@ -59,7 +59,7 @@ Read the ad and ask at the same time. One-tap questions are answered **from the 
 <table>
 <tr>
 <td width="50%"><img src="docs/screenshots/desktop-search.jpg" alt="Search: 144 ads, 140 real flats"><br><sub><b>"144 ads, 140 real flats."</b> Repeats are grouped; likely misleading ads are folded away with the reason.</sub></td>
-<td width="50%"><img src="docs/screenshots/desktop-filters.jpg" alt="Property Finder style filters"><br><sub><b>Property Finder's own filters and wording</b>, with a live count of real flats.</sub></td>
+<td width="50%"><img src="docs/screenshots/desktop-filters.jpg" alt="Portal-style filters"><br><sub><b>Familiar portal filters and wording</b>, with a live count of real flats.</sub></td>
 </tr>
 </table>
 
@@ -102,7 +102,7 @@ Read the ad and ask at the same time. One-tap questions are answered **from the 
 | Questions on a listing (Scout panel beside the ad) | Code answers one-tap questions from the ad text with a quote. Free-text questions: the LLM splits and rewrites them and may quote the ad; every quote is checked against the ad text in code (`lib/custom-questions.ts`) | Answer from the ad before bothering the agent; the person picks what is sent |
 | Negotiation brief | The LLM, given only registered deals, other ads and TrueUnit's checks; code rejects numbers out of order; rules fallback (`lib/negotiation-brief.ts`) | Saves money with evidence, cannot invent a price |
 | What is known about each flat | Code (`lib/facts.ts`): agent confirmed, checked (data or a viewing), not verified, conflicting | An agent's answer is their word, not proof |
-| Agent replies, nudges, viewing confirmations, offer answers | **Simulated** in the browser (`components/agent-simulator.tsx`) and labelled so | Shows the full loop; the real version needs Property Finder's lead inbox |
+| Agent replies, nudges, viewing confirmations, offer answers | **Simulated** in the browser (`components/agent-simulator.tsx`) and labelled so | Shows the full loop; the real version needs the portal's lead inbox |
 
 ## Accounts (optional)
 
@@ -142,11 +142,11 @@ python3 scripts/write_audit.py       # AUDIT.md
 
 | Real | Mocked |
 |---|---|
-| All 242 ads: price, size, beds, photos, agent, agency, text, listing date, Verified badge, captured from propertyfinder.ae on 25 Nov 2026 (`data/raw/`) | Sending questions to agents, their replies, and viewing confirmation (simulated after a few seconds) |
+| All 242 ads: price, size, beds, photos, agent, agency, text, listing date, Verified badge, captured from a public Dubai property portal on 25 Nov 2026 (`data/raw/`) | Sending questions to agents, their replies, and viewing confirmation (simulated after a few seconds) |
 | Every check and every reason shown (`scripts/build_data.py`) | Agent view numbers (reply time, accuracy) |
 | Nearby places from OpenStreetMap; commute by car as an estimate (distance x road factor, off-peak and rush-hour speeds) | Exact metro/tram times (link to Google Maps instead) |
 | Expat guide figures (DEWA deposit, Ejari, 5% housing fee, deposit, agency fee, chiller) as ranges from public renting guides, linked in the app | |
-| Registered rents and sales per size and price trends: the DLD records Property Finder shows via DataGuru (`data/raw/dataguru.json`) | Push notifications when an agent answers (described, not built) |
+| Registered rents and sales per size and price trends: the DLD records the portal shows via DataGuru (`data/raw/dataguru.json`) | Push notifications when an agent answers (described, not built) |
 | Photo matches between ads, and against 343 ads in 8 neighbouring towers (perceptual hashes) | |
 | The brief, follow-up questions, trusted top 5, contact and consent, accounts and sync (Postgres) | |
 
