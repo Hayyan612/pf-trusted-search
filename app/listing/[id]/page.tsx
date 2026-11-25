@@ -2,11 +2,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   BedDouble, Bath, Maximize, ExternalLink, ShieldCheck, ShieldAlert, ShieldX, Layers, ChevronLeft,
-  Camera, Clock, Building2, Sofa, BadgeCheck, Languages, FileText, Check,
+  Clock, Building2, Sofa, BadgeCheck, Languages, FileText, Check,
 } from "lucide-react";
 import { StatusPill } from "@/components/status-pill";
 import { ConfirmBar } from "@/components/confirm-drawer";
 import { FadeImage } from "@/components/fade-image";
+import { PhotoGallery } from "@/components/photo-gallery";
 import { AgentAvatar } from "@/components/agent-avatar";
 import { getListing, getUnit, aed, listedAgo, type Severity } from "@/lib/data";
 import { cn } from "@/lib/utils";
@@ -45,25 +46,7 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
         <ChevronLeft className="size-4" /> Back to results
       </Link>
 
-      {/* Gallery: one large, two small on desktop; swipeable on phones */}
-      <div className="relative">
-        <div className="flex snap-x snap-mandatory gap-1 overflow-x-auto md:grid md:aspect-[2.4/1] md:grid-cols-[1.6fr_1fr] md:grid-rows-2 md:gap-2 md:overflow-hidden md:rounded-2xl">
-          {l.images.slice(0, 3).map((src, i) => (
-            <div key={src} className={cn("relative aspect-[4/3] w-[88%] shrink-0 snap-start overflow-hidden bg-muted md:aspect-auto md:w-auto", i === 0 && "md:row-span-2")}>
-              <FadeImage src={src} alt="" className="absolute inset-0 size-full object-cover" loading={i === 0 ? "eager" : "lazy"} />
-            </div>
-          ))}
-        </div>
-        <div className="pointer-events-none absolute bottom-3 left-3 flex gap-1">
-          {l.verified && <span className="inline-flex items-center gap-1 rounded-md bg-white/95 px-2 py-0.5 text-[12px] font-medium"><BadgeCheck className="size-3.5 text-sky-600" /> Verified</span>}
-          {l.agentSuper && <span className="rounded-md bg-primary/90 px-2 py-0.5 text-[12px] font-medium text-white">SuperAgent</span>}
-        </div>
-        {l.imageCount ? (
-          <span className="pointer-events-none absolute right-3 bottom-3 inline-flex items-center gap-1 rounded-md bg-black/55 px-2 py-0.5 text-[12px] text-white md:right-[calc(38%+0.75rem)]">
-            <Camera className="size-3.5" /> {l.imageCount}
-          </span>
-        ) : null}
-      </div>
+      <PhotoGallery images={l.images} total={l.imageCount} verified={l.verified} superAgent={l.agentSuper} sourceUrl={l.url} title={l.title ?? "Listing photos"} />
 
       <div className="mt-4 grid gap-6 px-4 md:grid-cols-[minmax(0,1fr)_380px] md:gap-8 md:px-0">
         {/* Main column */}
