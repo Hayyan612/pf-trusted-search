@@ -1,4 +1,5 @@
 "use client";
+import { Card } from "@/components/ui/card";
 
 import Link from "next/link";
 import { useEffect } from "react";
@@ -37,12 +38,12 @@ export default function ShortlistPage() {
       </div>
 
       {items.length === 0 && (
-        <div className="rounded-2xl border border-dashed p-6 text-center text-[14px] text-muted-foreground">
-          Nothing yet. Open a flat and tap <b>Confirm before I call</b>.
+        <Card className="gap-0 border-dashed p-6 text-center text-[14px] text-muted-foreground shadow-none">
+          <p>Nothing yet. Open a flat and tap <b>Confirm before I call</b>.</p>
           <div className="mt-3">
             <Button asChild size="sm"><Link href="/search?kind=rent">Find a flat</Link></Button>
           </div>
-        </div>
+        </Card>
       )}
 
       {items.map((it) => {
@@ -50,7 +51,7 @@ export default function ShortlistPage() {
         if (!l) return null;
         const r = it.reply;
         return (
-          <div key={it.id} className="overflow-hidden rounded-2xl border transition-shadow hover:shadow-sm motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-300">
+          <Card className="gap-0 overflow-hidden py-0 transition-shadow hover:shadow-md motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-300">
             <Link href={`/listing/${l.id}`} className="flex gap-3 p-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={l.images[0]} alt="" className="size-16 rounded-lg object-cover" />
@@ -88,12 +89,12 @@ export default function ShortlistPage() {
                 </div>
               )}
             </div>
-          </div>
+          </Card>
         );
       })}
 
       {/* Web to app handoff */}
-      <div className="space-y-2 rounded-2xl border border-primary/20 bg-accent p-4">
+      <Card className="gap-2 border-primary/20 bg-accent p-4 shadow-none">
         <div className="flex items-center gap-2 text-[14px] font-semibold text-primary"><Smartphone className="size-4" /> Continue on your phone</div>
         {session ? (
           <p className="text-[13px]">
@@ -111,7 +112,7 @@ export default function ShortlistPage() {
             </div>
           </div>
         )}
-      </div>
+      </Card>
       {items.length > 0 && (
         <button className="text-[12px] text-muted-foreground underline" onClick={clear}>Reset demo</button>
       )}

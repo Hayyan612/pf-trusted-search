@@ -1,6 +1,8 @@
+import { Card } from "@/components/ui/card";
 import Link from "next/link";
-import { Sparkles, ChevronDown } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { ListingCard } from "@/components/listing-card";
+import { HiddenAds } from "@/components/hidden-ads";
 import { listingsFor, unitsFor, summary, BUILDING, type Kind } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
@@ -48,7 +50,7 @@ export default async function SearchPage({ searchParams }: { searchParams: SP })
       </div>
 
       {/* TrueUnit banner: the moment of "this list is noisy" */}
-      <div className="mx-4 rounded-2xl border border-primary/20 bg-accent p-4 md:mx-0">
+      <Card className="mx-4 gap-0 border-primary/20 bg-accent p-4 shadow-none md:mx-0">
         <div className="flex items-center gap-2 text-[13px] font-semibold text-primary">
           <Sparkles className="size-4" /> Scout checked these {s.ads} ads
         </div>
@@ -64,7 +66,7 @@ export default async function SearchPage({ searchParams }: { searchParams: SP })
             All ads ({s.ads})
           </Link>
         </div>
-      </div>
+      </Card>
 
       <p className="hidden px-1 text-[12px] text-muted-foreground md:block">Real ads captured from propertyfinder.ae. Checks explained in <Link href="/how" className="underline">How it decides</Link>.</p>
       </aside>
@@ -76,18 +78,11 @@ export default async function SearchPage({ searchParams }: { searchParams: SP })
               <ListingCard key={unit.id} listing={listing} unit={unit} showUnit index={i} />
             ))}
             {hidden.length > 0 && (
-              <details className="group rounded-2xl border p-3">
-                <summary className="flex cursor-pointer list-none items-center justify-between text-[14px] font-medium">
-                  {hidden.length} hidden as likely misleading
-                  <ChevronDown className="size-4 transition-transform duration-200 group-open:rotate-180" />
-                </summary>
-                <p className="mt-2 text-[13px] text-muted-foreground">Hidden, not deleted. Open one to see why. You can still contact the agent.</p>
-                <div className="mt-3 grid gap-4 motion-safe:animate-in motion-safe:fade-in">
-                  {hidden.map(({ listing, unit }) => (
-                    <ListingCard key={unit.id} listing={listing} unit={unit} showUnit />
-                  ))}
-                </div>
-              </details>
+              <HiddenAds count={hidden.length}>
+                {hidden.map(({ listing, unit }) => (
+                  <ListingCard key={unit.id} listing={listing} unit={unit} showUnit />
+                ))}
+              </HiddenAds>
             )}
           </>
         ) : (

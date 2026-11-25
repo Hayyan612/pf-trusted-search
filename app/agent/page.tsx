@@ -1,3 +1,4 @@
+import { Card } from "@/components/ui/card";
 import { Sparkles, Timer, TrendingUp, UserCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getListing, priceLine } from "@/lib/data";
@@ -27,7 +28,7 @@ export default function AgentPage() {
 
       <div className="grid gap-4 md:grid-cols-2">
       {reqs.map((l) => (
-        <div key={l.id} className="space-y-3 rounded-2xl border p-4">
+        <Card className="gap-3 p-4">
           <div className="flex items-center gap-2 text-[13px] font-medium text-primary"><Sparkles className="size-4" /> From a Scout user · budget fits · moving in December</div>
           <div className="text-[14px]"><b>{priceLine(l)}</b> · {l.beds} bed · {l.size.toLocaleString()} sq ft · ref {l.id}</div>
           <ul className="space-y-1 text-[13px]">
@@ -39,7 +40,7 @@ export default function AgentPage() {
             <Button size="sm" variant="outline">Price or date changed</Button>
             <Button size="sm" variant="outline">Already {l.kind === "rent" ? "let" : "sold"}: remove ad</Button>
           </div>
-        </div>
+        </Card>
       ))}
       </div>
 

@@ -1,3 +1,4 @@
+import { Card } from "@/components/ui/card";
 import Link from "next/link";
 import { ArrowRight, ShieldCheck, Sparkles, Layers, MessageSquareText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -63,7 +64,7 @@ export default function Home() {
         </Link>
       </section>
 
-      <section className="space-y-3 rounded-2xl border p-4 md:col-start-2 md:row-span-3 md:row-start-1 md:self-start md:p-6">
+      <Card className="gap-3 p-4 md:col-start-2 md:row-span-3 md:row-start-1 md:self-start md:p-6">
         <h2 className="text-[15px] font-semibold">How TrueUnit helps</h2>
         <ul className="space-y-3 text-[14px]">
           <li className="flex gap-3">
@@ -85,7 +86,7 @@ export default function Home() {
             </span>
           </li>
         </ul>
-      </section>
+      </Card>
 
       <p className="pb-2 text-[12px] text-muted-foreground md:col-span-2">
         Real listings from {BUILDING}, captured from propertyfinder.ae on {CAPTURED_AT}. Agent replies in this prototype are simulated.{" "}

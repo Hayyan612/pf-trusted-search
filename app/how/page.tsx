@@ -1,3 +1,4 @@
+import { Card } from "@/components/ui/card";
 import { ShieldCheck, ShieldAlert, ShieldX } from "lucide-react";
 import { BUILDING, CAPTURED_AT } from "@/lib/data";
 
@@ -19,12 +20,12 @@ export default function HowPage() {
           </li>
         ))}
       </ul>
-      <div className="rounded-2xl border p-4 text-[13px] text-muted-foreground">
+      <Card className="gap-0 p-4 text-[13px] text-muted-foreground">
         <b className="text-foreground">Same flat, many ads.</b> Ads are merged into one flat only when they share photos <i>and</i> have the same bedrooms and size. Same size alone is not enough: Princess Tower repeats the same layouts on 101 floors.
-      </div>
-      <div className="rounded-2xl border p-4 text-[13px] text-muted-foreground">
+      </Card>
+      <Card className="gap-0 p-4 text-[13px] text-muted-foreground">
         <b className="text-foreground">What is real here.</b> Every listing is a real ad from {BUILDING}, captured from propertyfinder.ae on {CAPTURED_AT}, with its real photos, price and text. The checks run on that data. The messages to agents and their replies are simulated.
-      </div>
+      </Card>
     </div>
   );
 }
