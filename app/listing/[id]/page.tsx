@@ -17,7 +17,8 @@ import { PriceTrend } from "@/components/price-trend";
 import { ListingDescription } from "@/components/listing-description";
 import { UpfrontCosts, Glossary } from "@/components/expat-guide";
 import { LocationCard } from "@/components/location-card";
-import { ListingScout } from "@/components/listing-scout";
+import { ScoutDock } from "@/components/scout-dock";
+import { OpenScoutButton } from "@/components/open-scout-button";
 import { negotiation } from "@/lib/negotiate";
 import { HandCoins } from "lucide-react";
 import { getListing, getUnit, aed, listedAgo, trendFor, BUILDING_DETAILS, type Severity } from "@/lib/data";
@@ -197,7 +198,7 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
             <CardContent><ListingDescription text={l.descriptionText || l.description} /></CardContent>
           </Card>
 
-          <ListingScout listing={l} />
+          <ScoutDock listing={l} />
 
           <LocationCard />
 
@@ -294,7 +295,7 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
                 )}
               </div>
             </CardContent>
-            <CardContent className="hidden md:block"><ConfirmBar listing={l} inline /></CardContent>
+            <CardContent className="hidden space-y-2 md:block"><ConfirmBar listing={l} inline /><OpenScoutButton className="w-full" /></CardContent>
           </Card>
 
           <Card className="py-3">

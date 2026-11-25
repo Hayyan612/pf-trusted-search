@@ -2,6 +2,7 @@
 import { Card } from "@/components/ui/card";
 
 import Link from "next/link";
+import { FactLedger } from "@/components/fact-ledger";
 import { useEffect, useState } from "react";
 import { Clock, CheckCircle2, AlertCircle, XCircle, Smartphone, Sparkles, CalendarClock, CalendarCheck } from "lucide-react";
 import { FadeImage } from "@/components/fade-image";
@@ -87,13 +88,14 @@ export default function ShortlistPage() {
                   <Clock className="size-4 animate-pulse" /> Waiting for {l.agent} ({it.questions.length} questions sent)
                 </div>
               )}
+              {!r && <div className="mt-2"><FactLedger listing={l} item={it} compact /></div>}
               {it.contact && (
                 <div className="mb-1 text-[12px] text-muted-foreground">Shared with {l.agent}: {it.contact.name}, replies by {it.contact.channel}</div>
               )}
               {r && (
                 <div className="space-y-2 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-1 motion-safe:duration-500">
                   <div className="flex items-center gap-2 font-medium">
-                    {r.outcome === "confirmed" && <><CheckCircle2 className="size-4 text-emerald-600" /> Confirmed by the agent</>}
+                    {r.outcome === "confirmed" && <><CheckCircle2 className="size-4 text-emerald-600" /> The agent confirmed the ad</>}
                     {r.outcome === "changed" && <><AlertCircle className="size-4 text-amber-600" /> Answered, with changes</>}
                     {r.outcome === "unavailable" && <><XCircle className="size-4 text-red-600" /> No longer available</>}
                     <span className="ml-auto text-[12px] font-normal text-muted-foreground">replied in {r.minutes} min</span>
@@ -101,6 +103,7 @@ export default function ShortlistPage() {
                   <ul className="space-y-1 text-[13px]">
                     {r.lines.filter((x) => !x.startsWith("Viewing:")).map((x) => <li key={x}>• {x}</li>)}
                   </ul>
+                  <FactLedger listing={l} item={it} />
 
                   {r.outcome !== "unavailable" && !v && (r.slots?.length ?? 0) > 0 && (
                     <div className="space-y-1.5 pt-1">

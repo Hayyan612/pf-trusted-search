@@ -13,6 +13,7 @@ import { negotiation } from "@/lib/negotiate";
 import type { NegotiationBrief } from "@/lib/negotiation-brief";
 import type { Listing } from "@/lib/data";
 import { cn } from "@/lib/utils";
+import { CustomAsk } from "@/components/custom-ask";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const aed = (n: number) => `AED ${n.toLocaleString("en-US")}`;
@@ -73,10 +74,12 @@ function NegotiationCard({ b, source }: { b: NegotiationBrief; source: string })
 }
 
 /** Scout, placed on the listing: quick answers from the ad, add what it does not say, and an AI negotiation brief. */
-export function ListingScout({ listing }: { listing: Listing }) {
+export function ListingScout({ listing, bare = false, asked: askedProp, onAsk }: { listing: Listing; bare?: boolean; asked?: string[]; onAsk?: (id: string) => void }) {
   const brief = useBrief();
   const extras = useExtraQuestions(listing.id);
-  const [asked, setAsked] = useState<string[]>([]);
+  const [askedLocal, setAskedLocal] = useState<string[]>([]);
+  const asked = askedProp ?? askedLocal;
+  const ask = (id: string) => (onAsk ? onAsk(id) : setAskedLocal((x) => (x.includes(id) ? x : [...x, id])));
   const [neg, setNeg] = useState<{ b: NegotiationBrief; source: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const n = negotiation(listing);
@@ -97,13 +100,8 @@ export function ListingScout({ listing }: { listing: Listing }) {
 
   const answers = asked.map((id) => answerFromAd(listing, id)).filter(Boolean) as AdAnswer[];
 
-  return (
-    <Card className="border-primary/25">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2"><span className="grid size-7 place-items-center rounded-full bg-gradient-to-br from-primary to-[var(--brand)] text-white"><Sparkles className="size-3.5" /></span> Ask Scout about this flat</CardTitle>
-        <CardDescription>Answers come from the ad itself. If the ad does not say, Scout asks {listing.agent} for you.</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3">
+  const content = (
+      <div className="space-y-3">
         <div className="flex flex-wrap gap-1.5">
           {AD_QUESTIONS(listing).map((d) => {
             const on = asked.includes(d.id);
@@ -112,7 +110,7 @@ export function ListingScout({ listing }: { listing: Listing }) {
                 key={d.id}
                 type="button"
                 whileTap={{ scale: 0.96 }}
-                onClick={() => setAsked((x) => (on ? x : [...x, d.id]))}
+                onClick={() => ask(d.id)}
                 className={cn("rounded-full border px-3 py-1.5 text-[12px] transition-colors", on ? "border-primary/40 bg-accent text-primary" : "border-primary/25 text-primary hover:bg-accent")}
               >
                 {d.q}
@@ -128,6 +126,8 @@ export function ListingScout({ listing }: { listing: Listing }) {
           <p className="rounded-lg bg-accent/60 px-3 py-2 text-[12px] text-primary">{extras.length} {extras.length === 1 ? "question" : "questions"} added. Tap <b>Confirm before I call</b> to send {extras.length === 1 ? "it" : "them"} to {listing.agent}.</p>
         )}
 
+        <CustomAsk listing={listing} />
+
         <div className="space-y-2 border-t pt-3">
           <div className="flex items-center gap-2 text-[13px] font-medium"><HandCoins className="size-4 text-primary" /> Negotiation</div>
           {n && <p className="text-[13px] text-muted-foreground">{n.headline}. {n.why}</p>}
@@ -139,7 +139,16 @@ export function ListingScout({ listing }: { listing: Listing }) {
           {busy && <div className="space-y-2">{[0, 1, 2].map((i) => <div key={i} className="shimmer h-8 rounded-lg" />)}</div>}
           {neg && <NegotiationCard b={neg.b} source={neg.source} />}
         </div>
-      </CardContent>
+      </div>
+  );
+  if (bare) return content;
+  return (
+    <Card className="border-primary/25">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2"><span className="grid size-7 place-items-center rounded-full bg-gradient-to-br from-primary to-[var(--brand)] text-white"><Sparkles className="size-3.5" /></span> Ask Scout about this flat</CardTitle>
+        <CardDescription>Answers come from the ad itself. If the ad does not say, Scout asks {listing.agent} for you.</CardDescription>
+      </CardHeader>
+      <CardContent>{content}</CardContent>
     </Card>
   );
 }

@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { AskAgents } from "@/components/ask-agents";
 import { AgentAvatar } from "@/components/agent-avatar";
 import { StatusPill } from "@/components/status-pill";
+import { FactLedger } from "@/components/fact-ledger";
 import { bedsLabel, budgetLabel, moveInLabel, type Brief } from "@/lib/brief";
 import { matchBrief } from "@/lib/match";
 import { getListing, priceLine, type Listing } from "@/lib/data";
@@ -217,7 +218,14 @@ function pushReplyThread(all: Msg[], it: ShortlistItem, l: Listing, update: (id:
     key: `next-${it.id}`,
     at: r.at + 1_000,
     from: "scout",
-    body: <>{summary} {slots.length && !it.viewing && !it.dropped ? "Want me to book a viewing?" : ""}</>,
+    body: (
+      <div className="space-y-2">
+        <p>{summary}</p>
+        <p className="text-[13px] text-muted-foreground">What I know about it, and how. An agent&apos;s answer is their word, not proof:</p>
+        <FactLedger listing={l} item={it} />
+        {slots.length > 0 && !it.viewing && !it.dropped && <p>Want me to book a viewing?</p>}
+      </div>
+    ),
     actions:
       !it.viewing && !it.dropped ? (
         <>
