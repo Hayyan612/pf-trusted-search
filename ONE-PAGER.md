@@ -7,7 +7,7 @@ Scout today helps people find more homes. TrueUnit makes Scout help one person d
 On 25 Nov 2026 I checked all 242 live ads in Princess Tower, Dubai Marina (144 rent, 98 sale).
 
 - **98 of 242 (40%) need a question before they are worth a call**: the same flat at another price, tenanted or available later, a different contact named, or live for 90+ days.
-- **6 use photos of a different flat, and all 6 carry the Verified badge.**
+- **6 ads share photos with an ad of a different size, and all 6 carry the Verified badge.** Checking them by hand, most are one flat listed for rent and for sale with a size typo; one pair is two sale ads (AED 2.0M and 2.7M) with the same photos. From the ad alone you cannot tell which flat you would see.
 - **Rental ads ask a median 8% above registered deals** (DLD data via DataGuru). 58 of 144 ask 15% or more above. Registered 2-bed rents fell from AED 153,750 to 123,750 in a year.
 - **0 of 144 rental ads say whether chiller is included.**
 

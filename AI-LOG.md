@@ -65,3 +65,11 @@ I built this with Claude (Claude Code) as my main tool. These are moments where 
 **How I caught it.** Reading the API's output on the live site after deploying, before showing it to anyone. The numbers were right (they are checked in code); the words were not.
 
 **What changed.** The instructions now say the person has not viewed the flat or spoken to the agent, never to thank them for a viewing, to use the agent's first name, and to keep it under 90 words. The next live run opened with "I am interested in the 3-bedroom unit and would like to make an opening offer". The same lesson shaped the free-text questions: when the model says "the ad already says…", code checks that the quote really is in the ad, and drops it if not.
+
+## 9. My photo rule hid ads that were probably honest
+
+**What the code said.** The photo-matching rule marked 6 ads "likely misleading": photos shared with another ad for a flat of a different size. All 6 carried the Verified badge, and I nearly led the one-pager with "6 fake ads".
+
+**How I caught it.** Before writing it up, I opened the 6 side by side. They are 3 pairs, each from one agency. Two pairs are one ad for rent and one for sale, with sizes 4 and 59 sq ft apart: most likely the same flat offered both ways, sizes typed differently. Only one pair, two sale ads at AED 2.0M and 2.7M, looks like two different flats.
+
+**What changed.** The one-pager now says what the data supports, not "6 fake ads". RULES.md (rule 2) records the overcall, who it hurts (the honest agents whose ads were hidden) and the fix: same agency, one rent and one sale, means "Ask first", not "misleading". I left the code as is for the submission and wrote the fix down rather than change the audit numbers at the last minute.
