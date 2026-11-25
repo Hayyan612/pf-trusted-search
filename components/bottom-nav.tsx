@@ -17,7 +17,7 @@ export function BottomNav() {
   const path = usePathname();
   const { items: saved } = useShortlist();
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-md border-t bg-white pb-[env(safe-area-inset-bottom)]">
+    <nav className="fixed inset-x-0 bottom-0 z-30 border-t bg-white pb-[env(safe-area-inset-bottom)] md:hidden">
       <ul className="grid grid-cols-4">
         {items.map(({ href, label, icon: Icon, match }) => {
           const active = match ? path.startsWith(match) : path === href.split("?")[0];

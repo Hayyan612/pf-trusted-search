@@ -45,7 +45,12 @@ export function simulateReply(l: Listing): AgentReply {
   const minutes = 6 + (h % 50);
   const codes = new Set(l.checks.map((c) => c.code));
   const slots = ["Thu 6:30 pm", "Sat 11:00 am"];
-  const cheques = l.kind === "rent" ? `${1 + (h % 4)} cheques, 5% deposit, agency fee 5% + VAT` : "Vacant on transfer, service charge about AED 20/sq ft";
+  // Deposit: usually 5% of annual rent unfurnished, 10% furnished (see AI-LOG.md #3). Service charges are not guessed.
+  const deposit = l.furnished === "YES" ? "10%" : "5%";
+  const cheques =
+    l.kind === "rent"
+      ? `${1 + (h % 4)} cheques, ${deposit} security deposit, agency fee 5% of the yearly rent`
+      : "Vacant on transfer. I will send the latest service charge statement.";
   if (codes.has("stale") && h % 2 === 0) {
     return { outcome: "unavailable", at: Date.now(), minutes, lines: [`Sorry, this one was ${l.kind === "rent" ? "let" : "sold"} last month. The ad will be removed.`] };
   }

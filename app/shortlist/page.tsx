@@ -27,7 +27,7 @@ export default function ShortlistPage() {
   }, [items, update]);
 
   return (
-    <div className="space-y-4 px-4 pt-5">
+    <div className="mx-auto max-w-3xl space-y-4 px-4 pt-5 md:px-8 md:pt-10">
       <div>
         <h1 className="text-[22px] font-semibold tracking-tight">Your shortlist</h1>
         <p className="text-[14px] text-muted-foreground">Flats Scout is confirming with agents for you. Answers land here and in the app.</p>

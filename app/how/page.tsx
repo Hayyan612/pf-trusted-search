@@ -9,7 +9,7 @@ const rules = [
 
 export default function HowPage() {
   return (
-    <div className="space-y-4 px-4 pt-5">
+    <div className="mx-auto max-w-3xl space-y-4 px-4 pt-5 md:px-8 md:pt-10">
       <h1 className="text-[22px] font-semibold tracking-tight">How TrueUnit decides</h1>
       <ul className="space-y-4">
         {rules.map(({ icon: Icon, tone, title, body }) => (

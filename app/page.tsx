@@ -14,21 +14,21 @@ export default function Home() {
   const rent = summary("rent");
   const sale = summary("sale");
   return (
-    <div className="space-y-6 px-4 pt-6">
+    <div className="mx-auto max-w-7xl space-y-6 px-4 pt-6 md:grid md:grid-cols-[1.1fr_1fr] md:gap-x-12 md:gap-y-8 md:space-y-0 md:px-8 md:pt-14">
       <section className="space-y-3">
         <Badge variant="outline" className="gap-1 border-primary/30 text-primary">
           <Sparkles className="size-3" /> Scout, with TrueUnit
         </Badge>
-        <h1 className="text-[26px] leading-tight font-semibold tracking-tight text-balance">
+        <h1 className="text-[26px] leading-tight font-semibold tracking-tight text-balance md:text-[44px] md:leading-[1.1]">
           Tell Scout what you need. It shows you the real flats, not the ads.
         </h1>
-        <p className="text-[15px] text-muted-foreground">
+        <p className="text-[15px] text-muted-foreground md:text-[17px]">
           The same flat is often advertised several times, at different prices, or after it is already let. TrueUnit checks
           every ad, groups them into real flats, and asks the agent before you call.
         </p>
       </section>
 
-      <section className="space-y-2">
+      <section className="space-y-2 md:col-start-1">
         <div className="flex items-center gap-2 rounded-full border bg-white px-4 py-3 shadow-sm">
           <Sparkles className="size-4 text-primary" />
           <span className="text-[15px] text-muted-foreground">What are you looking for?</span>
@@ -46,7 +46,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="grid grid-cols-2 gap-3">
+      <section className="grid grid-cols-2 gap-3 md:col-start-1">
         <Link href="/search?kind=rent" className="rounded-2xl bg-primary p-4 text-primary-foreground">
           <div className="text-[13px] opacity-80">I want to</div>
           <div className="text-lg font-semibold">Rent</div>
@@ -63,7 +63,7 @@ export default function Home() {
         </Link>
       </section>
 
-      <section className="space-y-3 rounded-2xl border p-4">
+      <section className="space-y-3 rounded-2xl border p-4 md:col-start-2 md:row-span-3 md:row-start-1 md:self-start md:p-6">
         <h2 className="text-[15px] font-semibold">How TrueUnit helps</h2>
         <ul className="space-y-3 text-[14px]">
           <li className="flex gap-3">
@@ -87,7 +87,7 @@ export default function Home() {
         </ul>
       </section>
 
-      <p className="pb-2 text-[12px] text-muted-foreground">
+      <p className="pb-2 text-[12px] text-muted-foreground md:col-span-2">
         Real listings from {BUILDING}, captured from propertyfinder.ae on {CAPTURED_AT}. Agent replies in this prototype are simulated.{" "}
         <Link href="/how" className="underline">
           How TrueUnit decides

@@ -12,7 +12,7 @@ import { useShortlist } from "@/lib/shortlist";
 import type { Listing } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
-export function ConfirmBar({ listing }: { listing: Listing }) {
+export function ConfirmBar({ listing, inline = false }: { listing: Listing; inline?: boolean }) {
   const router = useRouter();
   const { add } = useShortlist();
   const [qs, setQs] = useState(() => questionsFor(listing));
@@ -27,17 +27,17 @@ export function ConfirmBar({ listing }: { listing: Listing }) {
   };
 
   return (
-    <div className="fixed inset-x-0 bottom-[57px] z-20 mx-auto flex w-full max-w-md gap-2 border-t bg-white px-4 py-3">
+    <div className={inline ? "hidden gap-2 md:flex md:flex-col-reverse" : "fixed inset-x-0 bottom-[57px] z-20 flex gap-2 border-t bg-white px-4 py-3 md:hidden"}>
       <Button
         variant="outline"
-        className="flex-1"
+        className={inline ? "w-full" : "flex-1"}
         onClick={() => toast("You can always call the agent directly", { description: `${listing.agent}, ${listing.broker}. In the real app this opens the call or WhatsApp.` })}
       >
         <Phone className="size-4" /> Call agent
       </Button>
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>
-          <Button className="flex-[1.4]">
+          <Button className={inline ? "w-full" : "flex-[1.4]"} size={inline ? "lg" : "default"}>
             <Sparkles className="size-4" /> Confirm before I call
           </Button>
         </DrawerTrigger>

@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import Link from "next/link";
+import { Suspense } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { BottomNav } from "@/components/bottom-nav";
+import { TopNav } from "@/components/top-nav";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -17,20 +19,23 @@ export const viewport: Viewport = { width: "device-width", initialScale: 1, them
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.variable}>
-      <body className="bg-neutral-100 antialiased">
-        <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col bg-white shadow-sm">
-          <header className="sticky top-0 z-30 flex items-center justify-between border-b bg-white/95 px-4 py-3 backdrop-blur">
+      <body className="bg-white antialiased">
+        <header className="sticky top-0 z-30 border-b bg-white/95 backdrop-blur">
+          <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-6 px-4 md:h-16 md:px-8">
             <Link href="/" className="flex items-center gap-2">
-              <span className="grid size-7 place-items-center rounded-full bg-[var(--brand)] text-[13px] font-bold text-white">PF</span>
-              <span className="text-[15px] font-semibold tracking-tight">
+              <span className="grid size-7 place-items-center rounded-full bg-[var(--brand)] text-[13px] font-bold text-white md:size-8">PF</span>
+              <span className="text-[15px] font-semibold tracking-tight md:text-base">
                 Scout <span className="text-primary">· TrueUnit</span>
               </span>
             </Link>
+            <Suspense fallback={<div className="hidden flex-1 md:block" />}>
+              <TopNav />
+            </Suspense>
             <span className="rounded-full border px-2 py-0.5 text-[11px] font-medium text-muted-foreground">Prototype</span>
-          </header>
-          <main className="flex-1 pb-24">{children}</main>
-          <BottomNav />
-        </div>
+          </div>
+        </header>
+        <main className="min-h-[calc(100dvh-4rem)] pb-24 md:pb-12">{children}</main>
+        <BottomNav />
         <Toaster position="top-center" />
       </body>
     </html>

@@ -9,7 +9,7 @@ const SAMPLE = ["175116789", "177350300"];
 export default function AgentPage() {
   const reqs = SAMPLE.map((id) => getListing(id)!).filter(Boolean);
   return (
-    <div className="space-y-4 px-4 pt-5">
+    <div className="mx-auto max-w-5xl space-y-4 px-4 pt-5 md:px-8 md:pt-10">
       <div>
         <div className="text-[12px] font-medium tracking-wide text-muted-foreground uppercase">What the agent sees</div>
         <h1 className="text-[22px] font-semibold tracking-tight">TrueUnit requests</h1>
@@ -25,6 +25,7 @@ export default function AgentPage() {
       </div>
       <p className="text-[11px] text-muted-foreground">Example figures for the prototype.</p>
 
+      <div className="grid gap-4 md:grid-cols-2">
       {reqs.map((l) => (
         <div key={l.id} className="space-y-3 rounded-2xl border p-4">
           <div className="flex items-center gap-2 text-[13px] font-medium text-primary"><Sparkles className="size-4" /> From a Scout user · budget fits · moving in December</div>
@@ -40,6 +41,7 @@ export default function AgentPage() {
           </div>
         </div>
       ))}
+      </div>
 
       <div className="space-y-2 rounded-2xl bg-accent p-4 text-[13px]">
         <div className="font-semibold text-primary">Why an agent would answer</div>

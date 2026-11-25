@@ -26,16 +26,21 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
   const pos = median && l.ppsf ? Math.min(95, Math.max(5, 50 + (l.vsMedian ?? 0))) : 50;
 
   return (
-    <div className="pb-20">
-      <div className="flex snap-x snap-mandatory gap-1 overflow-x-auto">
-        {l.images.map((src) => (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img key={src} src={src} alt="" className="aspect-[4/3] w-[88%] shrink-0 snap-start object-cover" />
-        ))}
+    <div className="mx-auto flex max-w-7xl flex-col pb-20 md:grid md:grid-cols-[1fr_400px] md:gap-x-8 md:px-8 md:pt-6 md:pb-12">
+      <div className="order-1 md:col-start-1 md:row-start-1">
+        <Link href={`/search?kind=${l.kind}&beds=${l.beds}`} className="mb-3 hidden items-center gap-1 text-[13px] text-muted-foreground md:inline-flex">
+          <ChevronLeft className="size-4" /> Back to results
+        </Link>
+        <div className="flex snap-x snap-mandatory gap-1 overflow-x-auto md:grid md:grid-cols-3 md:grid-rows-2 md:gap-2 md:overflow-visible">
+          {l.images.map((src, i) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img key={src} src={src} alt="" className={cn("aspect-[4/3] w-[88%] shrink-0 snap-start object-cover md:size-full md:rounded-xl", i === 0 && "md:col-span-2 md:row-span-2")} />
+          ))}
+        </div>
       </div>
 
-      <div className="space-y-4 px-4 pt-3">
-        <Link href={`/search?kind=${l.kind}&beds=${l.beds}`} className="inline-flex items-center gap-1 text-[13px] text-muted-foreground">
+      <aside className="order-2 space-y-4 px-4 pt-3 md:col-start-2 md:row-span-2 md:row-start-1 md:self-start md:px-0 md:pt-9 md:sticky md:top-24">
+        <Link href={`/search?kind=${l.kind}&beds=${l.beds}`} className="inline-flex items-center gap-1 text-[13px] text-muted-foreground md:hidden">
           <ChevronLeft className="size-4" /> Back to results
         </Link>
         <div className="space-y-1">
@@ -76,7 +81,10 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
             })}
           </ul>
         </section>
+        <ConfirmBar listing={l} inline />
+      </aside>
 
+      <div className="order-3 space-y-4 px-4 pt-4 md:col-start-1 md:row-start-2 md:px-0 md:pt-6">
         {median > 0 && l.ppsf && (
           <section className="space-y-2 rounded-2xl border p-4">
             <h2 className="text-[15px] font-semibold">Price against this tower</h2>
