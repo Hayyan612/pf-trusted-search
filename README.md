@@ -2,6 +2,9 @@
 
 # TrueUnit
 
+<a href="https://trueunit.hayyan.space"><img src="https://img.shields.io/badge/Live%20demo-trueunit.hayyan.space-2f2a7a?style=for-the-badge" alt="Live demo: trueunit.hayyan.space"></a>
+<a href="https://trueunit.hayyan.space/assistant?demo=1"><img src="https://img.shields.io/badge/60--second%20tour-try%20it-e5484d?style=for-the-badge" alt="60-second tour"></a>
+
 ### Fewer, better decisions for people renting or buying in Dubai
 
 A personal assistant for people searching a Dubai property portal. It checks the ads before you spend a call,<br>
