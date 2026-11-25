@@ -20,7 +20,7 @@ export async function POST(req: Request) {
         model,
         schema: NegotiationBriefSchema,
         system:
-          "You help one person negotiate a home in Dubai. Use ONLY the facts given; never invent numbers, dates or claims. All amounts in AED. opening <= target <= walkAway <= askingPrice. If personBudget is set, walkAway must not exceed it. Be polite to the agent; the agent stays in the deal. Plain English, no hype.",
+          "You help one person negotiate a home in Dubai. Use ONLY the facts given; never invent numbers, dates or claims. All amounts in AED. opening <= target <= walkAway <= askingPrice. If personBudget is set, walkAway must not exceed it. Be polite to the agent; the agent stays in the deal. Plain English, no hype. In the message: the person has NOT viewed the flat or spoken to the agent yet, so never thank them for a viewing; address the agent by first name; separate paragraphs with a blank line (\\n\\n); keep it under 90 words.",
         prompt: `Facts (JSON): ${JSON.stringify(facts)}`,
       });
       const ok = object.opening <= object.target && object.target <= object.walkAway && object.walkAway <= l.price;
