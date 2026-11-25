@@ -11,6 +11,11 @@ export interface ShortlistItem {
   reply?: AgentReply;
   viewing?: { slot: string; status: "requested" | "confirmed"; at: number };
   contact?: { name: string; channel: string }; // what was shared with the agent (the number itself stays in this browser)
+  nudgedAt?: number;
+  dropped?: boolean; // "Not for me"
+  viewedAt?: number;
+  feedback?: "as-described" | "different";
+  offer?: { amount: number; cheques: number; at: number; status: "sent" | "accepted" | "countered"; counter?: number; answeredAt?: number };
 }
 
 export interface AgentReply {

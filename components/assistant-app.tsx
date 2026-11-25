@@ -14,6 +14,7 @@ import { BriefEditor } from "@/components/brief-editor";
 import { TopFive } from "@/components/top-five";
 import { QuickQuestions } from "@/components/quick-questions";
 import { ScoutChat } from "@/components/scout-chat";
+import { ScoutThread } from "@/components/scout-thread";
 import { ExpatGuide } from "@/components/expat-guide";
 import { LocationCard } from "@/components/location-card";
 import { matchBrief } from "@/lib/match";
@@ -331,7 +332,7 @@ export function AssistantApp({ chatEnabled }: { chatEnabled: boolean }) {
               </motion.div>
               <div className="min-w-0 space-y-5">
                 <motion.div variants={rise}><NextSteps /></motion.div>
-                <motion.div variants={rise}><WelcomeBack /></motion.div>
+                <motion.div variants={rise}><ScoutThread brief={brief} onEdit={() => setEditing(true)} /></motion.div>
                 <motion.div variants={rise}><TopFive brief={brief} /></motion.div>
                 {brief.newToDubai && (
                   <motion.div variants={rise}>

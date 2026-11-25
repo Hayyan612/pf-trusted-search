@@ -35,8 +35,8 @@ export function AskAgents({ items, label }: { items: { id: string; toAsk: string
     const who = { name: contact.name.trim(), channel: CHANNEL_LABEL[contact.channel] };
     fresh.forEach((r, i) => add({ id: r.l.id, requestedAt: now + i, questions: r.qs.map((q) => q.text), contact: who, note: draftMessage(r.l, r.qs.map((q) => q.text), { name: contact.name, brief }) }));
     setOpen(false);
-    toast.success(`Sent to ${fresh.length} ${fresh.length === 1 ? "agent" : "agents"}`, { description: "Answers will appear in your shortlist." });
-    router.push("/shortlist?sent=1");
+    toast.success(`Sent to ${fresh.length} ${fresh.length === 1 ? "agent" : "agents"}`, { description: "Scout will post their answers in your thread." });
+    if (window.location.pathname !== "/assistant") router.push("/shortlist?sent=1");
   };
 
   return (

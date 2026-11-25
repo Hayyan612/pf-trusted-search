@@ -8,6 +8,7 @@ import { TopNav } from "@/components/top-nav";
 import { UserMenu } from "@/components/user-menu";
 import { ShortlistSync } from "@/components/shortlist-sync";
 import { BriefSync } from "@/components/brief-sync";
+import { AgentSimulator } from "@/components/agent-simulator";
 import "./globals.css";
 
 const sans = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-sans" });
@@ -49,6 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Toaster position="top-center" />
         {AUTH_ENABLED && <ShortlistSync />}
         {AUTH_ENABLED && <BriefSync />}
+        <AgentSimulator />
       </body>
     </html>
   );

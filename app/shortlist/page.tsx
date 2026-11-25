@@ -8,12 +8,9 @@ import { FadeImage } from "@/components/fade-image";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useShortlist } from "@/lib/shortlist";
-import { simulateReply } from "@/lib/questions";
 import { getListing, priceLine } from "@/lib/data";
 import { useSession } from "@/lib/auth-client";
 
-const SIMULATED_DELAY_MS = 6000;
-const VIEWING_CONFIRM_MS = 4000;
 
 export default function ShortlistPage() {
   const authEnabled = process.env.NEXT_PUBLIC_AUTH_ENABLED !== "false";
@@ -27,21 +24,7 @@ export default function ShortlistPage() {
   const rank = (i: (typeof items)[number]) => (!i.reply ? 2 : i.reply.outcome === "confirmed" ? 0 : i.reply.outcome === "changed" ? 1 : 3);
   const sorted = [...items].sort((a, b) => rank(a) - rank(b));
 
-  // Prototype only: fill in the agent's reply a few seconds after the request.
-  useEffect(() => {
-    const t = setInterval(() => {
-      for (const it of items) {
-        if (!it.reply && Date.now() - it.requestedAt > SIMULATED_DELAY_MS) {
-          const l = getListing(it.id);
-          if (l) update(it.id, { reply: simulateReply(l) });
-        }
-        if (it.viewing?.status === "requested" && Date.now() - it.viewing.at > VIEWING_CONFIRM_MS) {
-          update(it.id, { viewing: { ...it.viewing, status: "confirmed" } });
-        }
-      }
-    }, 1000);
-    return () => clearInterval(t);
-  }, [items, update]);
+  // Agent replies, viewing confirmations and offer answers are simulated by <AgentSimulator /> in the layout.
 
   return (
     <div className="mx-auto max-w-3xl space-y-4 px-4 pt-5 md:px-8 md:pt-10">
