@@ -9,7 +9,8 @@ import { ConfirmBar } from "@/components/confirm-drawer";
 import { FadeImage } from "@/components/fade-image";
 import { PhotoGallery } from "@/components/photo-gallery";
 import { AgentAvatar } from "@/components/agent-avatar";
-import { getListing, getUnit, aed, listedAgo, type Severity } from "@/lib/data";
+import { getListing, getUnit, aed, listedAgo, trendFor, BUILDING_DETAILS, type Severity } from "@/lib/data";
+import { TrendChart } from "@/components/trend-chart";
 import { cn } from "@/lib/utils";
 
 const ICON: Record<Severity, typeof ShieldCheck> = { ok: ShieldCheck, ask: ShieldAlert, hide: ShieldX };
@@ -30,7 +31,6 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
   const order = { hide: 0, ask: 1, ok: 2 } as const;
   const checks = [...l.checks].sort((a, b) => order[a.severity] - order[b.severity]);
   const median = l.medianPpsf ?? 0;
-  const pos = median && l.ppsf ? Math.min(95, Math.max(5, 50 + (l.vsMedian ?? 0))) : 50;
   const details = [
     { icon: Clock, k: "Listed", v: listedAgo(l.ageDays) },
     { icon: Building2, k: "Property type", v: "Apartment" },
@@ -60,9 +60,9 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
               {l.kind === "rent" && <span className="text-[17px] font-normal text-muted-foreground"> yearly</span>}
             </div>
             <div className="flex flex-wrap gap-2 text-[13px]">
-              {l.vsMedian !== null && (
-                <span className={cn("rounded-lg px-2.5 py-1", l.vsMedian <= -15 ? "bg-amber-50 text-amber-800" : "bg-accent text-primary")}>
-                  {l.vsMedian > 0 ? "+" : ""}{l.vsMedian}% vs similar flats in the tower
+              {l.vsRegistered !== null && (
+                <span className={cn("rounded-lg px-2.5 py-1", l.vsRegistered <= -15 ? "bg-amber-50 text-amber-800" : "bg-accent text-primary")}>
+                  {l.vsRegistered > 0 ? "+" : ""}{l.vsRegistered}% vs registered {l.kind === "rent" ? "rents" : "sales"}
                 </span>
               )}
               {siblings.length > 0 && <span className="rounded-lg bg-accent px-2.5 py-1 text-primary">Also advertised {siblings.length}× elsewhere</span>}
@@ -85,16 +85,45 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
             </dl>
           </section>
 
-          {median > 0 && l.ppsf && (
+          {l.registered.length > 0 && (
             <section className="border-t pt-5">
-              <h2 className="mb-3 text-[16px] font-semibold">Price against this tower</h2>
-              <div className="relative h-2 rounded-full bg-gradient-to-r from-amber-200 via-emerald-200 to-neutral-200">
-                <span className="absolute -top-1 size-4 -translate-x-1/2 rounded-full border-2 border-white bg-primary shadow" style={{ left: `${pos}%` }} />
+              <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+                <h2 className="text-[16px] font-semibold">Registered {l.kind === "rent" ? "rents" : "sales"} for this size</h2>
+                <span className="text-[12px] text-muted-foreground">DLD records via DataGuru</span>
               </div>
-              <p className="mt-2 text-[13px] text-muted-foreground">
-                AED {l.ppsf.toLocaleString()} per sq ft. The median for {l.beds}-bed {l.kind === "rent" ? "rentals" : "sales"} in Princess Tower is AED{" "}
-                {Math.round(median).toLocaleString()}. Based on today&apos;s live ads, not registered deals.
-              </p>
+              <div className="overflow-hidden rounded-xl border">
+                <table className="w-full text-[14px] tabular-nums">
+                  <thead className="bg-muted/60 text-left text-[12px] text-muted-foreground">
+                    <tr><th className="px-3 py-2 font-medium">Date</th><th className="px-3 py-2 font-medium">Price (AED)</th><th className="px-3 py-2 text-right font-medium">Size</th></tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    <tr className="bg-accent/70 font-medium">
+                      <td className="px-3 py-2">This ad</td><td className="px-3 py-2">{l.price.toLocaleString("en-US")}</td><td className="px-3 py-2 text-right">{l.size.toLocaleString()} sq ft</td>
+                    </tr>
+                    {l.registered.map((t) => (
+                      <tr key={t.date + t.amount}>
+                        <td className="px-3 py-2">{new Date(t.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</td>
+                        <td className="px-3 py-2">{t.amount.toLocaleString("en-US")}</td>
+                        <td className="px-3 py-2 text-right">{t.size.toLocaleString()} sq ft</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {l.vsRegistered !== null && l.registeredMedian && (
+                <p className="mt-2 text-[13px] text-muted-foreground">
+                  This ad is <b className="text-foreground">{l.vsRegistered > 0 ? `${l.vsRegistered}% above` : l.vsRegistered < 0 ? `${Math.abs(l.vsRegistered)}% below` : "equal to"}</b> the median of these registered {l.kind === "rent" ? "rents" : "sales"} (AED {Math.round(l.registeredMedian).toLocaleString("en-US")}).
+                  {median > 0 && l.vsMedian !== null && <> Against other live ads in the tower it is {l.vsMedian > 0 ? "+" : ""}{l.vsMedian}% per sq ft.</>}
+                </p>
+              )}
+            </section>
+          )}
+
+          {trendFor(l.kind, l.beds).length > 1 && (
+            <section className="border-t pt-5">
+              <h2 className="mb-1 text-[16px] font-semibold">Prices and trends</h2>
+              <p className="mb-3 text-[13px] text-muted-foreground">Average {l.beds}-bed {l.kind === "rent" ? "yearly rent" : "sale price"}, last 12 months. DataGuru.</p>
+              <TrendChart points={trendFor(l.kind, l.beds)} unit={l.kind === "rent" ? "yearly rent" : "price"} />
             </section>
           )}
 
@@ -129,6 +158,18 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
                   <li key={a} className="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[13px]"><Check className="size-3.5 text-emerald-600" /> {a}</li>
                 ))}
               </ul>
+            </section>
+          )}
+
+          {BUILDING_DETAILS && (
+            <section className="border-t pt-5">
+              <h2 className="mb-3 flex items-center gap-2 text-[16px] font-semibold"><Building2 className="size-4" /> About Princess Tower</h2>
+              <dl className="grid grid-cols-1 gap-x-8 gap-y-2 text-[14px] sm:grid-cols-2">
+                <div className="flex gap-3"><dt className="w-28 shrink-0 text-muted-foreground">Developer</dt><dd className="font-medium capitalize">{BUILDING_DETAILS.developer_name?.toLowerCase().replace(/\s+\(llc\)/, "").trim()}</dd></div>
+                <div className="flex gap-3"><dt className="w-28 shrink-0 text-muted-foreground">Master plan</dt><dd className="font-medium capitalize">{BUILDING_DETAILS.master_developer_name?.toLowerCase().replace(/\s+\(p\.j\.s\.c\)/, "").trim()}</dd></div>
+                <div className="flex gap-3"><dt className="w-28 shrink-0 text-muted-foreground">Completed</dt><dd className="font-medium">{BUILDING_DETAILS.completion_year}</dd></div>
+                <div className="flex gap-3"><dt className="w-28 shrink-0 text-muted-foreground">Floors</dt><dd className="font-medium">101, same layouts repeat on most floors</dd></div>
+              </dl>
             </section>
           )}
 

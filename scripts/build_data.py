@@ -16,6 +16,9 @@ raw = json.load(open(os.path.join(ROOT, "data/raw/princess.json")))
 hashes = json.load(open(os.path.join(ROOT, "data/photo-hashes.json")))
 # Agent photo, SuperAgent flag, languages, agency logo, reference, amenities, more photos (same capture day)
 extra = json.load(open(os.path.join(ROOT, "data/raw/extra.json")))
+# DataGuru (DLD registered deals) as shown on each Property Finder listing page, one page per flat size
+dataguru = json.load(open(os.path.join(ROOT, "data/raw/dataguru.json")))
+REG_BAND = 15   # % either side of the registered median counted as "in line"
 TODAY = datetime(2026, 11, 25, tzinfo=timezone.utc)
 PHOTO_DISTANCE = 6          # perceptual-hash distance counted as "same photo"
 SIZE_TOLERANCE = 3          # sq ft
@@ -61,6 +64,24 @@ for kind in ("rent", "sale"):
         })
         L[str(p["id"])] = x
 
+registered, trends, building = {}, {}, None
+for pid, g in dataguru.items():
+    key = (int(g.get("beds") or 0), g.get("size"))
+    tx = g.get("tx") or {}
+    registered[key] = {"rent": [{"date": t["date"][:10], "amount": int(float(t["amount"])), "size": t["size"]} for t in tx.get("rent", [])],
+                       "sale": [{"date": t["date"][:10], "amount": int(float(t["amount"])), "size": t["size"]} for t in tx.get("buy", [])]}
+    kind = "rent" if "/rent/" in json.dumps(g) or pid in {str(p["id"]) for p in raw["rent"]} else "sale"
+    tr = (g.get("trends") or {}).get("graph", {}).get("1Y")
+    if tr: trends.setdefault((kind, int(g.get("beds") or 0)), [{"period": t["period"], "tower": t.get("towerPrice"), "community": t.get("communityPrice")} for t in tr])
+    building = building or g.get("building")
+
+def registered_for(x):
+    r = registered.get((x["beds"], x["size"]))
+    if r is None:  # nearest size with the same bedrooms, within 3 sq ft
+        for (b, sz), v in registered.items():
+            if b == x["beds"] and sz and x["size"] and abs(sz - x["size"]) <= SIZE_TOLERANCE: r = v; break
+    return (r or {}).get(x["kind"], [])
+
 # building medians (AED per sq ft) by purpose and bedrooms
 groups = defaultdict(list)
 for x in L.values():
@@ -92,10 +113,29 @@ for x in L.values():
     m = median.get((x["kind"], x["beds"]))
     vs = round(100 * (x["ppsf"] / m - 1)) if m and x["ppsf"] else None
     x["vsMedian"], x["medianPpsf"] = vs, m
-    if vs is not None and vs <= LOW_PRICE:
+    reg = registered_for(x)
+    x["registered"] = reg
+    if reg:
+        regmed = statistics.median(t["amount"] for t in reg)
+        rv = round(100 * (x["price"] / regmed - 1))
+        x["vsRegistered"], x["registeredMedian"] = rv, regmed
+        what = "rents" if x["kind"] == "rent" else "sales"
+        if rv <= -REG_BAND:
+            checks.append({"code": "below_registered", "severity": "ask", "label": f"{abs(rv)}% below registered {what}",
+                           "detail": f"The last {len(reg)} registered {what} for this size were around AED {regmed:,.0f} (DLD data via DataGuru). A price this low is either a real deal or bait to get calls."})
+        elif rv >= REG_BAND:
+            checks.append({"code": "above_registered", "severity": "ok", "label": f"{rv}% above registered {what}",
+                           "detail": f"Registered {what} for this size were around AED {regmed:,.0f}. Not a warning, but room to negotiate."})
+        else:
+            checks.append({"code": "registered_ok", "severity": "ok", "label": f"In line with registered {what}",
+                           "detail": f"Within {abs(rv)}% of the last {len(reg)} registered {what} for this size (around AED {regmed:,.0f}, DLD data via DataGuru)."})
+    else:
+        x["vsRegistered"], x["registeredMedian"] = None, None
+    has_reg = bool(registered_for(x))
+    if not has_reg and vs is not None and vs <= LOW_PRICE:
         checks.append({"code": "price_low", "severity": "ask", "label": f"Price {abs(vs)}% below similar flats",
                        "detail": f"AED {x['ppsf']}/sq ft vs AED {round(m)}/sq ft median for {x['beds']}-bed {'rentals' if x['kind']=='rent' else 'sales'} in this tower. Could be a real deal or bait to get calls."})
-    elif vs is not None and abs(vs) <= 10:
+    elif not has_reg and vs is not None and abs(vs) <= 10:
         checks.append({"code": "price_ok", "severity": "ok", "label": "Price in line with similar flats", "detail": f"Within {abs(vs)}% of the tower median per sq ft."})
     for o, n in shared.get(x["id"], {}).items():
         y = L[o]
@@ -143,6 +183,8 @@ for u in unit_list:
             if L[i]["status"] == "ok" and u["priceMin"] != u["priceMax"]: L[i]["status"] = "ask"
 
 out = {"building": "Princess Tower, Dubai Marina", "capturedAt": "2026-11-25",
+       "buildingDetails": building,
+       "trends": {f"{k[0]}-{k[1]}": v for k, v in trends.items()},
        "medians": {f"{k[0]}-{k[1]}": v for k, v in median.items()},
        "listings": list(L.values()), "units": unit_list}
 json.dump(out, open(os.path.join(ROOT, "data/app-data.json"), "w"))

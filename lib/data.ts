@@ -43,7 +43,12 @@ export interface Listing {
   brokerLogo: string | null;
   reference: string | null;
   amenities: string[];
+  registered: { date: string; amount: number; size: number }[];
+  vsRegistered: number | null;
+  registeredMedian: number | null;
 }
+
+export interface TrendPoint { period: string; tower: number | null; community: number | null }
 
 export interface Unit {
   id: string;
@@ -58,6 +63,8 @@ export interface Unit {
 }
 
 const data = appData as unknown as {
+  buildingDetails: { developer_name?: string; master_developer_name?: string; completion_year?: number } | null;
+  trends: Record<string, TrendPoint[]>;
   building: string;
   capturedAt: string;
   listings: Listing[];
@@ -69,6 +76,11 @@ const unitById = new Map(data.units.map((u) => [u.id, u]));
 
 export const BUILDING = data.building;
 export const CAPTURED_AT = data.capturedAt;
+export const BUILDING_DETAILS = data.buildingDetails;
+
+export function trendFor(kind: Kind, beds: number): TrendPoint[] {
+  return data.trends[`${kind}-${beds}`] ?? [];
+}
 
 export function getListing(id: string): Listing | undefined {
   return byId.get(id);
