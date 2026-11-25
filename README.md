@@ -146,7 +146,7 @@ python3 scripts/write_audit.py       # AUDIT.md
 | Real | Mocked |
 |---|---|
 | All 242 ads: price, size, beds, photos, agent, agency, text, listing date, Verified badge, captured from a public Dubai property portal on 25 Nov 2026 (`data/raw/`) | Sending questions to agents, their replies, and viewing confirmation (simulated after a few seconds) |
-| Every check and every reason shown (`scripts/build_data.py`) | Agent view numbers (reply time, accuracy) |
+| Every check and every reason shown (`scripts/build_data.py`) | |
 | Nearby places from OpenStreetMap; commute by car as an estimate (distance x road factor, off-peak and rush-hour speeds) | Exact metro/tram times (link to Google Maps instead) |
 | Expat guide figures (DEWA deposit, Ejari, 5% housing fee, deposit, agency fee, chiller) as ranges from public renting guides, linked in the app | |
 | Registered rents and sales per size and price trends: the DLD records the portal shows via DataGuru (`data/raw/dataguru.json`) | Push notifications when an agent answers (described, not built) |

@@ -15,7 +15,6 @@ export function TopNav() {
     { href: "/search?kind=sale", label: "Buy", active: path === "/search" && kind === "sale" },
     { href: "/search?kind=rent", label: "Rent", active: path === "/search" && kind !== "sale" },
     { href: "/shortlist", label: `Shortlist${items.length ? ` (${items.length})` : ""}`, active: path === "/shortlist" },
-    { href: "/agent", label: "Agent view", active: path === "/agent" },
     { href: "/how", label: "How it decides", active: path === "/how" },
   ];
   return (
