@@ -1,10 +1,12 @@
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { auth, pool } from "@/lib/auth";
+import { ensureDb } from "@/lib/db";
 
 const MAX_ITEMS = 100;
 
 async function userId() {
+  await ensureDb();
   const session = await auth.api.getSession({ headers: await headers() });
   return session?.user.id ?? null;
 }
