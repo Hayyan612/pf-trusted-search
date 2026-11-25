@@ -8,7 +8,7 @@ A personal assistant for people searching a Dubai property portal. It checks the
 asks every agent only what their ad doesn't say, and puts every answer in one place.<br>
 **The agent stays in the deal.**
 
-**[Open the live prototype →](https://trueunit.hayyan.space)** &nbsp;·&nbsp; [60-second demo](https://trueunit.hayyan.space/assistant?demo=1) &nbsp;·&nbsp; [One-pager](ONE-PAGER.md)
+**[Open the live prototype →](https://trueunit.hayyan.space)** &nbsp;·&nbsp; [60-second demo](https://trueunit.hayyan.space/assistant?demo=1) &nbsp;·&nbsp; [One-pager](ONE-PAGER.md) &nbsp;·&nbsp; [Source on GitHub](https://github.com/Hayyan612/pf-trusted-search)
 
 <img src="docs/screenshots/desktop-home.jpg" alt="TrueUnit home: tell Scout what you need" width="900">
 
