@@ -15,21 +15,24 @@ export const BriefSchema = z.object({
   household: z.enum(["single", "couple", "family", "sharing"]).nullable().default(null).describe("Renters: who is moving in. null if not said."),
   financing: z.enum(["cash", "mortgage"]).nullable().default(null).describe("Buyers: paying cash or with a mortgage. null if not said."),
   use: z.enum(["live", "invest"]).nullable().default(null).describe("Buyers: to live in, or to rent out as an investment. null if not said."),
+  newToDubai: z.boolean().nullable().default(null).describe("true if they say they are moving to Dubai, relocating, or new to Dubai; false if they already live there; null if not said."),
 });
 
 export type Brief = z.infer<typeof BriefSchema>;
 
-export const EMPTY_BRIEF: Brief = { purpose: "rent", budgetMax: null, beds: [], moveIn: null, furnished: "any", mustHaves: [], maxCheques: null, notes: null, household: null, financing: null, use: null };
+export const EMPTY_BRIEF: Brief = { purpose: "rent", budgetMax: null, beds: [], moveIn: null, furnished: "any", mustHaves: [], maxCheques: null, notes: null, household: null, financing: null, use: null, newToDubai: null };
 
 /** The essentials Scout asks about when the person's words leave them out. */
-export function missingEssentials(b: Brief): ("budget" | "beds" | "moveIn" | "household" | "financing" | "use")[] {
-  const out: ("budget" | "beds" | "moveIn" | "household" | "financing" | "use")[] = [];
+export type Essential = "budget" | "beds" | "moveIn" | "household" | "financing" | "use" | "newToDubai";
+export function missingEssentials(b: Brief): Essential[] {
+  const out: Essential[] = [];
   if (!b.budgetMax) out.push("budget");
   if (!b.beds.length) out.push("beds");
   if (!b.moveIn) out.push("moveIn");
   if (b.purpose === "rent" && !b.household) out.push("household");
   if (b.purpose === "buy" && !b.use) out.push("use");
   if (b.purpose === "buy" && !b.financing) out.push("financing");
+  if (b.newToDubai == null) out.push("newToDubai");
   return out;
 }
 
@@ -73,6 +76,8 @@ export function parseBriefRules(text: string, today = new Date("2026-11-25")): B
   else if (/\bcash\b/.test(t)) b.financing = "cash";
   if (/invest|rental income|yield|rent (it )?out|let (it )?out|roi\b/.test(t)) b.use = "invest";
   else if (/live in|to live|for us|for my family|end[- ]user/.test(t) && b.purpose === "buy") b.use = "live";
+  if (/new to dubai|moving to dubai|relocat|first time in dubai|just moved|moving from|expat/.test(t)) b.newToDubai = true;
+  else if (/already (live|living) in dubai|living in dubai for/.test(t)) b.newToDubai = false;
   const ch = t.match(/(\d{1,2})\s*cheques?/);
   if (ch) b.maxCheques = Number(ch[1]);
   return b;
@@ -94,6 +99,7 @@ export function extraTags(b: Brief): string[] {
   if (b.purpose === "rent" && b.household) t.push(HOUSEHOLD_LABEL[b.household]);
   if (b.purpose === "buy" && b.use) t.push(USE_LABEL[b.use]);
   if (b.purpose === "buy" && b.financing) t.push(FINANCING_LABEL[b.financing]);
+  if (b.newToDubai) t.push("New to Dubai");
   return t;
 }
 

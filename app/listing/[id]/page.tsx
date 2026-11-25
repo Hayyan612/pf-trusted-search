@@ -15,6 +15,7 @@ import { AgentAvatar } from "@/components/agent-avatar";
 import { PhotoGallery } from "@/components/photo-gallery";
 import { PriceTrend } from "@/components/price-trend";
 import { ListingDescription } from "@/components/listing-description";
+import { UpfrontCosts, Glossary } from "@/components/expat-guide";
 import { getListing, getUnit, aed, listedAgo, trendFor, BUILDING_DETAILS, type Severity } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
@@ -84,6 +85,8 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
               </Badge>
             </div>
           </div>
+
+          {l.kind === "rent" && <UpfrontCosts rent={l.price} furnished={l.furnished} />}
 
           <Card>
             <CardHeader><CardTitle>Property details</CardTitle></CardHeader>
@@ -174,6 +177,16 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
             </CardHeader>
             <CardContent><ListingDescription text={l.descriptionText || l.description} /></CardContent>
           </Card>
+
+          {l.kind === "rent" && (
+            <Card>
+              <CardHeader>
+                <CardTitle>New to Dubai?</CardTitle>
+                <CardDescription>The terms this ad assumes you know.</CardDescription>
+              </CardHeader>
+              <CardContent><Glossary only={["ejari", "dewa", "cheques", "chiller", "housing-fee", "deposit", "agency-fee"]} /></CardContent>
+            </Card>
+          )}
 
           {l.amenities.length > 0 && (
             <Card>

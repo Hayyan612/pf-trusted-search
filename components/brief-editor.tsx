@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { FINANCING_LABEL, HOUSEHOLD_LABEL, MUST_HAVES, USE_LABEL, moveInLabel, type Brief } from "@/lib/brief";
@@ -126,6 +127,11 @@ export function BriefEditor({ initial, onSave, saveLabel = "Save brief" }: { ini
           </Select>
         </div>
       )}
+
+      <label className="flex cursor-pointer items-center justify-between gap-3 rounded-xl border p-3 text-[14px]">
+        <span><span className="font-medium">New to Dubai?</span><span className="block text-[12px] text-muted-foreground">Explain Ejari, DEWA, cheques, chiller and move-in costs</span></span>
+        <Switch id="new-to-dubai" checked={Boolean(b.newToDubai)} onCheckedChange={(v) => set("newToDubai", v)} />
+      </label>
 
       <Button type="submit" size="lg" className="w-full">{saveLabel}</Button>
     </form>

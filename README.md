@@ -7,6 +7,7 @@ A personal search assistant inside Scout. It learns what one person needs, check
 Try:
 - **Renter flow:** Scout assistant > "2-bed to rent under 130k a year, furnished, moving in January, I have a cat" > answer the quick questions > Build my shortlist > Ask all 5 agents (add a name and number, tick consent) > Shortlist: answers arrive in a few seconds > pick a viewing time
 - **Buyer flow:** Scout assistant > "Buy a 2-bed to rent out, budget 2.5 million" > cash or mortgage > shortlist with investor questions (current rent, service charges)
+- **New to Dubai:** start with "Moving to Dubai from London in January, 1-bed to rent under 100k" > the expat guide explains Ejari, DEWA, cheques, chiller and housing fee, and shows the cash needed to move in for the #1 flat (change 1 / 2 / 4 / 12 cheques)
 - **Browse instead:** Rent or Buy > Real flats vs All ads > open the hidden section at the bottom > a "Likely misleading" ad and why
 - **Agent side:** Agent view
 
@@ -59,6 +60,7 @@ python3 scripts/write_audit.py       # AUDIT.md
 |---|---|
 | All 242 ads: price, size, beds, photos, agent, agency, text, listing date, Verified badge, captured from propertyfinder.ae on 25 Nov 2026 (`data/raw/`) | Sending questions to agents, their replies, and viewing confirmation (simulated after a few seconds) |
 | Every check and every reason shown (`scripts/build_data.py`) | Agent view numbers (reply time, accuracy) |
+| Expat guide figures (DEWA deposit, Ejari, 5% housing fee, deposit, agency fee, chiller) as ranges from public renting guides, linked in the app | |
 | Registered rents and sales per size and price trends: the DLD records Property Finder shows via DataGuru (`data/raw/dataguru.json`) | Push notifications when an agent answers (described, not built) |
 | Photo matches between ads, and against 343 ads in 8 neighbouring towers (perceptual hashes) | |
 | The brief, follow-up questions, trusted top 5, contact and consent, accounts and sync (Postgres) | |

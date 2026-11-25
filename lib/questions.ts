@@ -10,6 +10,7 @@ export function questionsFor(l: Listing, fromBrief: string[] = []): { id: string
           { id: "available", text: "Is it still available, and from what date?", on: true },
           { id: "price", text: `Is AED ${price} a year the final rent?`, on: true },
           { id: "terms", text: "How many cheques, what deposit and what agency fee?", on: true },
+          { id: "chiller", text: "Is it chiller-free, or is cooling billed separately (and what deposit)?", on: true },
           { id: "viewing", text: "Can I view it this week? Please suggest two times.", on: true },
         ]
       : [

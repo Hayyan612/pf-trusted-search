@@ -80,6 +80,13 @@ export function QuickQuestions({ draft, onDone }: { draft: Brief; onDone: (b: Br
             <Chips options={Object.keys(FINANCING_LABEL) as (keyof typeof FINANCING_LABEL)[]} value={b.financing} onPick={(v) => setB({ ...b, financing: v })} label={(v) => FINANCING_LABEL[v]} />
           </div>
         )}
+        {asks.includes("newToDubai") && (
+          <div className="space-y-2">
+            <div className="text-[14px] font-medium">Is this your first home in Dubai?</div>
+            <Chips options={["yes", "no"]} value={b.newToDubai == null ? null : b.newToDubai ? "yes" : "no"} onPick={(v) => setB({ ...b, newToDubai: v === "yes" })} label={(v) => (v === "yes" ? "Yes, explain things" : "No, I know how it works")} />
+            {b.newToDubai && <p className="text-[12px] text-muted-foreground">Scout will explain Ejari, DEWA, cheques and chiller charges, and show what you pay to move in.</p>}
+          </div>
+        )}
         <div className="flex gap-2">
           <Button size="lg" className="flex-1" onClick={() => onDone(b)}>{answered ? "Continue" : "Skip for now"}</Button>
         </div>

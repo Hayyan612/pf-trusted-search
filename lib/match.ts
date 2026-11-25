@@ -52,6 +52,10 @@ export function matchBrief(brief: Brief) {
       toAsk.push("What are the yearly service charges?");
       if (brief.financing === "mortgage") toAsk.push("Is the seller fine with a mortgage buyer?");
     }
+    if (brief.purpose === "rent") {
+      if (has(l, /chiller[- ]?free|free chiller|chiller included/i)) fits.push("Chiller-free");
+      else toAsk.push("Is it chiller-free, or is cooling billed separately?");
+    }
     if (brief.purpose === "rent" && brief.household === "sharing") toAsk.push("Does the landlord allow sharing?");
     if (brief.purpose === "rent" && brief.maxCheques) toAsk.push(`Can I pay in ${brief.maxCheques} ${brief.maxCheques === 1 ? "cheque" : "cheques"}?`);
     if (l.status === "hide") misses.push("Likely misleading");

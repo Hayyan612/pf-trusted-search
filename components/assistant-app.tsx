@@ -14,6 +14,8 @@ import { BriefEditor } from "@/components/brief-editor";
 import { TopFive } from "@/components/top-five";
 import { QuickQuestions } from "@/components/quick-questions";
 import { ScoutChat } from "@/components/scout-chat";
+import { ExpatGuide } from "@/components/expat-guide";
+import { matchBrief } from "@/lib/match";
 import { EMPTY_BRIEF, bedsLabel, budgetLabel, extraTags, missingEssentials, moveInLabel, type Brief } from "@/lib/brief";
 import { saveBrief, useBrief } from "@/lib/brief-store";
 import { useSession } from "@/lib/auth-client";
@@ -175,6 +177,10 @@ export function AssistantApp({ chatEnabled }: { chatEnabled: boolean }) {
       <div className="min-w-0 space-y-5">
         <WelcomeBack />
         <TopFive brief={brief} />
+        {brief.newToDubai && (() => {
+          const first = brief.purpose === "rent" ? matchBrief(brief).top[0]?.listing : undefined;
+          return <ExpatGuide exampleRent={first?.price} furnished={first?.furnished} />;
+        })()}
         <ScoutChat brief={brief} enabled={chatEnabled} />
       </div>
       <Sheet open={editing} onOpenChange={setEditing}>
