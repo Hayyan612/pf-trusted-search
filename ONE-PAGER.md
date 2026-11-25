@@ -44,9 +44,11 @@ The portal already watches contact rate, lead-to-viewing, time to a signed deal 
 
 **How many people book a viewing after Scout checks the flat for them.**
 
-A viewing is when someone stops scrolling and actually goes to see a home. That's the step all the wasted calls get in the way of. So if Scout works, more people should get there, and faster.
+A viewing is when someone stops scrolling and actually goes to see a home. That's the step all the wasted calls get in the way of. If Scout works, more people should get there, and faster.
 
-To test it, I'd turn Scout on for 1 in every 100 people renting in Dubai, for 4 weeks, and compare them with everyone else. I'd hope for about 15% more viewings. That's a starting bar I'd set properly with the team.
+To test it, I'd turn Scout on for 1 in every 100 people renting in Dubai for 4 weeks, and compare them with everyone else.
+
+My starting guess is about 15% more viewings (if 10 in 100 book one today, that's 11 or 12). I'd set the real target with the team from three things: how many people book viewings today, whether 1 in 100 gives us enough people to notice the change, and what lift makes Scout worth running.
 
 **I'm wrong if** viewings don't go up, if agents get a lot fewer leads without getting more viewings, or if agents don't answer at least half of Scout's questions.
 
