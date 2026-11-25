@@ -5,6 +5,8 @@ import { Suspense } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { BottomNav } from "@/components/bottom-nav";
 import { TopNav } from "@/components/top-nav";
+import { UserMenu } from "@/components/user-menu";
+import { ShortlistSync } from "@/components/shortlist-sync";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -31,12 +33,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Suspense fallback={<div className="hidden flex-1 md:block" />}>
               <TopNav />
             </Suspense>
-            <span className="rounded-full border px-2 py-0.5 text-[11px] font-medium text-muted-foreground">Prototype</span>
+            <div className="flex items-center gap-2">
+              <span className="hidden rounded-full border px-2 py-0.5 text-[11px] font-medium text-muted-foreground lg:inline">Prototype</span>
+              <UserMenu />
+            </div>
           </div>
         </header>
         <main className="min-h-[calc(100dvh-4rem)] pb-24 md:pb-12">{children}</main>
         <BottomNav />
         <Toaster position="top-center" />
+        <ShortlistSync />
       </body>
     </html>
   );

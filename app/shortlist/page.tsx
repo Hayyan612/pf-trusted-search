@@ -7,11 +7,13 @@ import { Button } from "@/components/ui/button";
 import { useShortlist } from "@/lib/shortlist";
 import { simulateReply } from "@/lib/questions";
 import { getListing, priceLine } from "@/lib/data";
+import { useSession } from "@/lib/auth-client";
 
 const SIMULATED_DELAY_MS = 6000;
 
 export default function ShortlistPage() {
   const { items, update, remove, clear } = useShortlist();
+  const { data: session } = useSession();
 
   // Prototype only: fill in the agent's reply a few seconds after the request.
   useEffect(() => {
@@ -92,10 +94,20 @@ export default function ShortlistPage() {
       {/* Web to app handoff */}
       <div className="space-y-2 rounded-2xl border border-primary/20 bg-accent p-4">
         <div className="flex items-center gap-2 text-[14px] font-semibold text-primary"><Smartphone className="size-4" /> Continue on your phone</div>
-        <p className="text-[13px]">
-          Your shortlist and Scout&apos;s conversations with agents are saved to your Property Finder account. Open the app and they
-          are there, with a push notification when an agent answers.
-        </p>
+        {session ? (
+          <p className="text-[13px]">
+            Saved to <b>{session.user.email}</b>. Log in on another device and your shortlist and the agents&apos; answers are there. In the
+            real product the Property Finder app would also send a notification when an agent answers.
+          </p>
+        ) : (
+          <div className="space-y-2">
+            <p className="text-[13px]">This shortlist is only on this device. Log in to keep it and pick it up on your phone or laptop.</p>
+            <div className="flex gap-2">
+              <Button asChild size="sm"><Link href="/login?next=/shortlist">Log in</Link></Button>
+              <Button asChild size="sm" variant="outline"><Link href="/signup?next=/shortlist">Create account</Link></Button>
+            </div>
+          </div>
+        )}
       </div>
       {items.length > 0 && (
         <button className="text-[12px] text-muted-foreground underline" onClick={clear}>Reset demo</button>

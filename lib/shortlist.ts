@@ -63,3 +63,27 @@ export function useShortlist() {
   const clear = useCallback(() => write([]), []);
   return { items, add, update, remove, clear };
 }
+
+/** Merge two shortlists by listing id; keep the newest request and any reply. */
+export function mergeShortlists(a: ShortlistItem[], b: ShortlistItem[]): ShortlistItem[] {
+  const map = new Map<string, ShortlistItem>();
+  for (const it of [...a, ...b]) {
+    const prev = map.get(it.id);
+    if (!prev) map.set(it.id, it);
+    else map.set(it.id, { ...(prev.requestedAt >= it.requestedAt ? prev : it), reply: prev.reply ?? it.reply });
+  }
+  return [...map.values()].sort((x, y) => y.requestedAt - x.requestedAt);
+}
+
+export function replaceShortlist(items: ShortlistItem[]) {
+  write(items);
+}
+
+export function onShortlistChange(cb: () => void) {
+  listeners.add(cb);
+  return () => listeners.delete(cb);
+}
+
+export function currentShortlist() {
+  return read();
+}
