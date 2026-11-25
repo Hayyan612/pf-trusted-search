@@ -9,6 +9,8 @@ import { UserMenu } from "@/components/user-menu";
 import { ShortlistSync } from "@/components/shortlist-sync";
 import { BriefSync } from "@/components/brief-sync";
 import { AgentSimulator } from "@/components/agent-simulator";
+import { Analytics } from "@/components/analytics";
+import { Logo } from "@/components/logo";
 import "./globals.css";
 
 const sans = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-sans" });
@@ -30,11 +32,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-white antialiased">
         <header className="sticky top-0 z-30 border-b bg-white/95 backdrop-blur">
           <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-6 px-4 md:h-16 md:px-8">
-            <Link href="/" className="flex items-center gap-2">
-              <span className="grid size-7 place-items-center rounded-full bg-[var(--brand)] text-[13px] font-bold text-white md:size-8">PF</span>
-              <span className="text-[15px] font-semibold tracking-tight md:text-base">
-                Scout <span className="text-primary">· TrueUnit</span>
-              </span>
+            <Link href="/" className="flex items-center gap-2" aria-label="TrueUnit home">
+              <Logo />
             </Link>
             <Suspense fallback={<div className="hidden flex-1 md:block" />}>
               <TopNav />
@@ -51,6 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {AUTH_ENABLED && <ShortlistSync />}
         {AUTH_ENABLED && <BriefSync />}
         <AgentSimulator />
+        <Analytics />
       </body>
     </html>
   );
