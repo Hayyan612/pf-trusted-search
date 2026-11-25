@@ -105,6 +105,8 @@ export function ScoutChat({ brief, enabled }: { brief: Brief; enabled: boolean }
   const end = useRef<HTMLDivElement>(null);
   useEffect(() => {
     // scrollIntoView returns a Promise in newer browsers; never hand it to React as a cleanup.
+    // Only follow the chat once there is a conversation, so the page opens at the top.
+    if (messages.length === 0) return;
     void end.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [messages]);
   const busy = status === "submitted" || status === "streaming";
