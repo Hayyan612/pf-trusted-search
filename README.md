@@ -1,16 +1,91 @@
-# TrueUnit by Scout (prototype)
+<div align="center">
 
-A personal search assistant inside Scout. It learns what one person needs, checks every ad in the building, hides the misleading ones with reasons, gives them a short list they can trust, and asks the agents for them before they call. The agent stays in the deal. Built on real Property Finder listings from Princess Tower, Dubai Marina.
+# TrueUnit
 
-**Live:** https://trueunit.hayyan.space (phone and desktop)
+### Fewer, better decisions for people renting or buying in Dubai
 
-Try:
-- **60-second demo:** https://trueunit.hayyan.space/assistant?demo=1 loads an example brief (2-bed, 130k, January, couple, cat, works at Property Finder in Media City, wants a gym, metro and supermarket nearby, new to Dubai)
-- **Renter flow:** Scout assistant > "2-bed to rent under 130k a year, furnished, moving in January, I have a cat" > answer the quick questions > Build my shortlist > Ask all 5 agents (add a name and number, tick consent) > Shortlist: answers arrive in a few seconds > pick a viewing time
-- **Buyer flow:** Scout assistant > "Buy a 2-bed to rent out, budget 2.5 million" > cash or mortgage > shortlist with investor questions (current rent, service charges)
-- **New to Dubai:** start with "Moving to Dubai from London in January, 1-bed to rent under 100k" > the expat guide explains Ejari, DEWA, cheques, chiller and housing fee, and shows the cash needed to move in for the #1 flat (change 1 / 2 / 4 / 12 cheques)
-- **Browse instead:** Rent or Buy > Real flats vs All ads > open the hidden section at the bottom > a "Likely misleading" ad and why
-- **Agent side:** Agent view
+A personal assistant inside Property Finder's Scout. It checks the ads before you spend a call,<br>
+asks every agent only what their ad doesn't say, and puts every answer in one place.<br>
+**The agent stays in the deal.**
+
+**[Open the live prototype →](https://trueunit.hayyan.space)** &nbsp;·&nbsp; [60-second demo](https://trueunit.hayyan.space/assistant?demo=1) &nbsp;·&nbsp; [One-pager](ONE-PAGER.md)
+
+<img src="docs/screenshots/desktop-home.jpg" alt="TrueUnit home: tell Scout what you need" width="900">
+
+</div>
+
+---
+
+## What I found in one tower
+
+I pulled all **242 live ads** in Princess Tower, Dubai Marina (144 rent, 98 sale) on 25 Nov 2026, let code group repeats and match photos, then checked 32 by hand.
+
+| | |
+|---|---|
+| **98 of 242** | ads need a question before they're worth a call: stale, also for sale, "tenanted" in the small print, holiday-home pricing |
+| **6 of 6** | ads that share photos with an ad of a different size carry the **Verified** badge |
+| **8%** | the typical rental ad asks above what the same size actually rented for (DLD records via DataGuru) |
+| **0 of 144** | rental ads say whether chiller is included |
+
+Full evidence in [AUDIT.md](AUDIT.md), the rules and where each one is wrong in [RULES.md](RULES.md).
+
+---
+
+## The product
+
+### 1. Tell Scout what you need, and it asks the agents for you
+
+<table>
+<tr>
+<td width="25%"><img src="docs/screenshots/phone-consent.jpg" alt="Consent before anything is sent"><br><sub><b>Nothing goes out without you.</b> Name, how to reply, and consent at the moment of sending.</sub></td>
+<td width="25%"><img src="docs/screenshots/phone-replies.jpg" alt="Agent replies with fact status"><br><sub><b>Answers come back into one thread.</b> Every fact is marked agent confirmed, checked, not verified, or conflicting.</sub></td>
+<td width="25%"><img src="docs/screenshots/phone-viewing.jpg" alt="Viewing confirmed with checklist"><br><sub><b>Book a viewing in one tap</b>, with a checklist of what to check on the day.</sub></td>
+<td width="25%"><img src="docs/screenshots/phone-offer-nudge.jpg" alt="Offer and answer"><br><sub><b>After the viewing:</b> was it as described? Then an offer grounded in registered deals.</sub></td>
+</tr>
+</table>
+
+### 2. Ask Scout, right beside the listing
+
+<img src="docs/screenshots/desktop-listing-scout.jpg" alt="Ask Scout panel docked beside a listing" width="100%">
+
+Read the ad and ask at the same time. One-tap questions are answered **from the ad itself, with a quote**. Type your own questions, several at once: Scout rewrites them for the agent, flags the ones the ad already answers, and you pick what to send.
+
+<img src="docs/screenshots/desktop-negotiation.jpg" alt="AI negotiation brief" width="100%">
+
+**Negotiation brief:** an opening offer, a target and a walk-away price, built only from registered deals and other ads in the tower, plus a message ready to send.
+
+### 3. Search that shows real flats, not ads
+
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/desktop-search.jpg" alt="Search: 144 ads, 140 real flats"><br><sub><b>"144 ads, 140 real flats."</b> Repeats are grouped; likely misleading ads are folded away with the reason.</sub></td>
+<td width="50%"><img src="docs/screenshots/desktop-filters.jpg" alt="Property Finder style filters"><br><sub><b>Property Finder's own filters and wording</b>, with a live count of real flats.</sub></td>
+</tr>
+</table>
+
+### 4. On your phone
+
+<table>
+<tr>
+<td width="33%"><img src="docs/screenshots/phone-ask-scout.jpg" alt="Ask Scout on a phone"><br><sub>Ask Scout as a bottom sheet.</sub></td>
+<td width="33%"><img src="docs/screenshots/phone-location.jpg" alt="Commute and what is nearby"><br><sub>Your commute, and the gym, metro and supermarket you asked about.</sub></td>
+<td width="33%"></td>
+</tr>
+</table>
+
+---
+
+## Try it
+
+- **60-second demo:** [/assistant?demo=1](https://trueunit.hayyan.space/assistant?demo=1) loads an example brief, then tap **Ask all 5 agents** and watch the replies come in (simulated, and labelled so).
+- **Renter:** "2-bed to rent under 130k a year, furnished, moving in January, I have a cat"
+- **Buyer:** "Buy a 2-bed to rent out, budget 2.5 million"
+- **New to Dubai:** "Moving to Dubai from London in January, 1-bed to rent under 100k" shows Ejari, DEWA, cheques, chiller and the cash to move in.
+- **Browse:** Rent, then open any listing and tap **Ask Scout**.
+
+**Stack:** Next.js 15, React 19, Tailwind v4, shadcn/ui, Motion, Vercel AI SDK with OpenRouter, Better Auth on Postgres, MapLibre with OpenStreetMap. Audit scripts in Python.
+
+---
 
 ## How Scout works
 
@@ -40,9 +115,10 @@ Everything works as a guest: the brief, shortlist and contact details stay in th
 ## Docs
 
 - [ONE-PAGER.md](ONE-PAGER.md): the problem, where it lives, metrics, the test, what is missing
-- [AUDIT.md](AUDIT.md): all 242 ads checked, 92 listed one by one with links
+- [AUDIT.md](AUDIT.md): all 242 ads checked, 92 listed one by one with links, plus 32 checked by hand
 - [RULES.md](RULES.md): 10 rules, where each one is wrong, and who gets hurt
-- [AI-LOG.md](AI-LOG.md): six times the AI was confidently wrong, and how it was caught
+- [AI-LOG.md](AI-LOG.md): 10 times the AI, or my own rules, got it wrong, how I caught it, and what changed
+- [data/](data/): every ad as captured, and `app-data.json` with TrueUnit's call on each
 - [DECISIONS.md](DECISIONS.md): decisions with times, and the research behind them
 
 ## How to run
