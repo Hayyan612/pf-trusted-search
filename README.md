@@ -5,6 +5,7 @@ A personal search assistant inside Scout. It learns what one person needs, check
 **Live:** https://trueunit.hayyan.space (phone and desktop)
 
 Try:
+- **60-second demo:** https://trueunit.hayyan.space/assistant?demo=1 loads an example brief (2-bed, 130k, January, couple, cat, works at Property Finder in Media City, wants a gym, metro and supermarket nearby, new to Dubai)
 - **Renter flow:** Scout assistant > "2-bed to rent under 130k a year, furnished, moving in January, I have a cat" > answer the quick questions > Build my shortlist > Ask all 5 agents (add a name and number, tick consent) > Shortlist: answers arrive in a few seconds > pick a viewing time
 - **Buyer flow:** Scout assistant > "Buy a 2-bed to rent out, budget 2.5 million" > cash or mortgage > shortlist with investor questions (current rent, service charges)
 - **New to Dubai:** start with "Moving to Dubai from London in January, 1-bed to rent under 100k" > the expat guide explains Ejari, DEWA, cheques, chiller and housing fee, and shows the cash needed to move in for the #1 flat (change 1 / 2 / 4 / 12 cheques)
@@ -18,6 +19,9 @@ Try:
 | Reading the person's words into a brief | An LLM (Vercel AI SDK, OpenRouter, structured output). Falls back to built-in rules without a key. | Language is what LLMs are good at. The brief is shown back and editable. |
 | Follow-up questions for missing essentials | Code (`missingEssentials`) | Ask only what is missing: budget, bedrooms, move-in, who is moving / live-in or invest / cash or mortgage. |
 | Which ads are misleading, and the trusted top 5 | Deterministic rules (`scripts/build_data.py`, `lib/match.ts`) | Explainable and repeatable. The model never judges trust. |
+| What to offer | Code (`lib/negotiate.ts`) from registered deals | A suggestion grounded in what the same size actually rented or sold for |
+| Location: map, commute, what is nearby | MapLibre GL + OpenFreeMap tiles; places from OpenStreetMap (Overpass), live with a saved fallback; car times are estimates with Google Maps links for exact routes | The person's priorities (gym, metro, office) shown on a real map |
+| Message to each agent | Code (`lib/message.ts`) from the brief, the flat's open questions and the suggested offer | Readable, copyable, the person sees exactly what is sent |
 | Chat ("only furnished", "why is #1 top?") | The LLM picks from 5 tools; each result renders as a shadcn component filled from real data | Generative UI without letting the model invent a listing or price. |
 | Contacting agents | The person, after adding contact details and ticking consent | Nothing is sent without a tap. |
 
@@ -60,6 +64,7 @@ python3 scripts/write_audit.py       # AUDIT.md
 |---|---|
 | All 242 ads: price, size, beds, photos, agent, agency, text, listing date, Verified badge, captured from propertyfinder.ae on 25 Nov 2026 (`data/raw/`) | Sending questions to agents, their replies, and viewing confirmation (simulated after a few seconds) |
 | Every check and every reason shown (`scripts/build_data.py`) | Agent view numbers (reply time, accuracy) |
+| Nearby places from OpenStreetMap; commute by car as an estimate (distance x road factor, off-peak and rush-hour speeds) | Exact metro/tram times (link to Google Maps instead) |
 | Expat guide figures (DEWA deposit, Ejari, 5% housing fee, deposit, agency fee, chiller) as ranges from public renting guides, linked in the app | |
 | Registered rents and sales per size and price trends: the DLD records Property Finder shows via DataGuru (`data/raw/dataguru.json`) | Push notifications when an agent answers (described, not built) |
 | Photo matches between ads, and against 343 ads in 8 neighbouring towers (perceptual hashes) | |

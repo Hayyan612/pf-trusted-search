@@ -1,4 +1,7 @@
 import { z } from "zod";
+import { NEARBY_KEYS, type NearbyKind } from "@/lib/nearby";
+import { WORKPLACE_IDS, WORKPLACES, type WorkplaceId } from "@/lib/workplaces";
+import { NEARBY_KINDS } from "@/lib/nearby";
 
 /** What the person is looking for. Filled from their own words, then editable. */
 export const MUST_HAVES = ["parking", "pets", "sea view", "high floor", "balcony", "maid's room"] as const;
@@ -7,7 +10,7 @@ export const BriefSchema = z.object({
   purpose: z.enum(["rent", "buy"]).describe("rent or buy"),
   budgetMax: z.number().int().positive().nullable().describe("Maximum price in AED. For rent: per year. Convert monthly to yearly (x12). null if not given."),
   beds: z.array(z.number().int().min(0).max(6)).describe("Acceptable bedroom counts. Studio = 0. Empty if any."),
-  moveIn: z.string().nullable().describe("When they want to move in or take possession, as YYYY-MM, or 'asap', or null."),
+  moveIn: z.string().nullable().describe("When they want to move in, as YYYY-MM, or 'asap' ONLY if they said soon/now/asap. null if they did not say when."),
   furnished: z.enum(["yes", "no", "any"]).describe("Furnishing preference"),
   mustHaves: z.array(z.enum(MUST_HAVES)).describe("Only things the person said they need"),
   maxCheques: z.number().int().min(1).max(12).nullable().describe("Renters: the most cheques they can pay with, e.g. 4. Larger number = more flexible. null if not said."),
@@ -15,15 +18,19 @@ export const BriefSchema = z.object({
   household: z.enum(["single", "couple", "family", "sharing"]).nullable().default(null).describe("Renters: who is moving in. null if not said."),
   financing: z.enum(["cash", "mortgage"]).nullable().default(null).describe("Buyers: paying cash or with a mortgage. null if not said."),
   use: z.enum(["live", "invest"]).nullable().default(null).describe("Buyers: to live in, or to rent out as an investment. null if not said."),
+  workplace: z.enum(WORKPLACE_IDS as [WorkplaceId, ...WorkplaceId[]]).nullable().default(null).describe("Where they will work, if it matches one of these areas; null otherwise"),
+  commuteMode: z.enum(["car", "metro", "walk"]).nullable().default(null).describe("How they will get to work"),
+  maxCommuteMin: z.number().int().min(5).max(120).nullable().default(null).describe("Longest commute they accept, minutes one way"),
+  nearby: z.array(z.enum(NEARBY_KEYS as [NearbyKind, ...NearbyKind[]])).default([]).describe("Places they want close by, e.g. gym, supermarket, metro"),
   newToDubai: z.boolean().nullable().default(null).describe("true if they say they are moving to Dubai, relocating, or new to Dubai; false if they already live there; null if not said."),
 });
 
 export type Brief = z.infer<typeof BriefSchema>;
 
-export const EMPTY_BRIEF: Brief = { purpose: "rent", budgetMax: null, beds: [], moveIn: null, furnished: "any", mustHaves: [], maxCheques: null, notes: null, household: null, financing: null, use: null, newToDubai: null };
+export const EMPTY_BRIEF: Brief = { purpose: "rent", budgetMax: null, beds: [], moveIn: null, furnished: "any", mustHaves: [], maxCheques: null, notes: null, household: null, financing: null, use: null, workplace: null, commuteMode: null, maxCommuteMin: null, nearby: [], newToDubai: null };
 
 /** The essentials Scout asks about when the person's words leave them out. */
-export type Essential = "budget" | "beds" | "moveIn" | "household" | "financing" | "use" | "newToDubai";
+export type Essential = "budget" | "beds" | "moveIn" | "household" | "financing" | "use" | "newToDubai" | "priorities";
 export function missingEssentials(b: Brief): Essential[] {
   const out: Essential[] = [];
   if (!b.budgetMax) out.push("budget");
@@ -33,6 +40,7 @@ export function missingEssentials(b: Brief): Essential[] {
   if (b.purpose === "buy" && !b.use) out.push("use");
   if (b.purpose === "buy" && !b.financing) out.push("financing");
   if (b.newToDubai == null) out.push("newToDubai");
+  if (!b.workplace && !b.nearby.length) out.push("priorities");
   return out;
 }
 
@@ -76,6 +84,19 @@ export function parseBriefRules(text: string, today = new Date("2026-11-25")): B
   else if (/\bcash\b/.test(t)) b.financing = "cash";
   if (/invest|rental income|yield|rent (it )?out|let (it )?out|roi\b/.test(t)) b.use = "invest";
   else if (/live in|to live|for us|for my family|end[- ]user/.test(t) && b.purpose === "buy") b.use = "live";
+  const near: Record<string, NearbyKind> = { gym: "gym", supermarket: "supermarket", grocery: "supermarket", metro: "metro", tram: "tram", school: "school", nursery: "school", park: "park", beach: "beach", clinic: "clinic", hospital: "clinic", pharmacy: "pharmacy", mosque: "mosque", mall: "mall" };
+  for (const [w, k] of Object.entries(near)) if (new RegExp(`\\b${w}`).test(t) && !b.nearby.includes(k)) b.nearby.push(k);
+  if (/property ?finder|media city/.test(t)) b.workplace = "pf-media-city";
+  else if (/internet city/.test(t)) b.workplace = "internet-city";
+  else if (/\bjlt\b|lakes towers/.test(t)) b.workplace = "jlt";
+  else if (/business bay/.test(t)) b.workplace = "business-bay";
+  else if (/downtown/.test(t)) b.workplace = "downtown";
+  else if (/\bdifc\b/.test(t)) b.workplace = "difc";
+  const cm = t.match(/(\d{1,3})\s*(?:min|mins|minutes)/);
+  if (cm) b.maxCommuteMin = Number(cm[1]);
+  if (/by metro|take the metro|metro to work/.test(t)) b.commuteMode = "metro";
+  else if (/drive|by car|driving/.test(t)) b.commuteMode = "car";
+  else if (/walk to work|walking distance/.test(t)) b.commuteMode = "walk";
   if (/new to dubai|moving to dubai|relocat|first time in dubai|just moved|moving from|expat/.test(t)) b.newToDubai = true;
   else if (/already (live|living) in dubai|living in dubai for/.test(t)) b.newToDubai = false;
   const ch = t.match(/(\d{1,2})\s*cheques?/);
@@ -100,6 +121,8 @@ export function extraTags(b: Brief): string[] {
   if (b.purpose === "buy" && b.use) t.push(USE_LABEL[b.use]);
   if (b.purpose === "buy" && b.financing) t.push(FINANCING_LABEL[b.financing]);
   if (b.newToDubai) t.push("New to Dubai");
+  if (b.workplace) t.push(`Work: ${WORKPLACES[b.workplace].label.replace("Property Finder, ", "")}${b.maxCommuteMin ? ` (max ${b.maxCommuteMin} min)` : ""}`);
+  for (const n of b.nearby) t.push(`Near: ${NEARBY_KINDS[n].label.toLowerCase()}`);
   return t;
 }
 

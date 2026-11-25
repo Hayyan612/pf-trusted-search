@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FINANCING_LABEL, HOUSEHOLD_LABEL, USE_LABEL, missingEssentials, moveInLabel, type Brief } from "@/lib/brief";
+import { NEARBY_KEYS, NEARBY_KINDS, type NearbyKind } from "@/lib/nearby";
+import { WORKPLACES, WORKPLACE_IDS, type WorkplaceId } from "@/lib/workplaces";
 import { cn } from "@/lib/utils";
 
 const RENT_BUDGETS = [80_000, 100_000, 130_000, 160_000, 200_000, 300_000];
@@ -78,6 +80,34 @@ export function QuickQuestions({ draft, onDone }: { draft: Brief; onDone: (b: Br
           <div className="space-y-2">
             <div className="text-[14px] font-medium">Cash or mortgage?</div>
             <Chips options={Object.keys(FINANCING_LABEL) as (keyof typeof FINANCING_LABEL)[]} value={b.financing} onPick={(v) => setB({ ...b, financing: v })} label={(v) => FINANCING_LABEL[v]} />
+          </div>
+        )}
+        {asks.includes("priorities") && (
+          <div className="space-y-3 rounded-xl border bg-muted/30 p-3">
+            <div className="space-y-2">
+              <div className="text-[14px] font-medium">Where will you work?</div>
+              <Chips options={[...WORKPLACE_IDS, "none"] as (WorkplaceId | "none")[]} value={b.workplace ?? null} onPick={(v) => setB({ ...b, workplace: v === "none" ? null : v })} label={(v) => (v === "none" ? "Remote / not sure" : WORKPLACES[v].label)} />
+            </div>
+            {b.workplace && (
+              <div className="space-y-2">
+                <div className="text-[14px] font-medium">Longest commute you would accept, each way?</div>
+                <Chips options={[15, 20, 30, 45]} value={b.maxCommuteMin} onPick={(v) => setB({ ...b, maxCommuteMin: v })} label={(v) => `${v} min`} />
+              </div>
+            )}
+            <div className="space-y-2">
+              <div className="text-[14px] font-medium">What do you want close by? <span className="font-normal text-muted-foreground">(pick any)</span></div>
+              <div className="flex flex-wrap gap-2">
+                {NEARBY_KEYS.map((k) => {
+                  const on = b.nearby.includes(k);
+                  return (
+                    <button key={k} type="button" onClick={() => setB({ ...b, nearby: on ? b.nearby.filter((x) => x !== k) : [...b.nearby, k as NearbyKind] })}
+                      className={cn("rounded-full border px-3.5 py-1.5 text-[14px] transition-colors", on ? "border-primary bg-primary text-primary-foreground" : "hover:border-primary/50 hover:bg-accent")}>
+                      {NEARBY_KINDS[k].label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         )}
         {asks.includes("newToDubai") && (

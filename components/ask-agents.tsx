@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Send } from "lucide-react";
+import { Send } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
@@ -12,6 +12,9 @@ import { questionsFor } from "@/lib/questions";
 import { useShortlist } from "@/lib/shortlist";
 import { ContactConsent } from "@/components/contact-consent";
 import { CHANNEL_LABEL, contactProblem, useContact } from "@/lib/contact";
+import { draftMessage } from "@/lib/message";
+import { useBrief } from "@/lib/brief-store";
+import { Copy } from "lucide-react";
 
 /** One confirm step for several agents at once. Nothing is sent until the person taps Send. */
 export function AskAgents({ items, label }: { items: { id: string; toAsk: string[] }[]; label?: string }) {
@@ -20,6 +23,7 @@ export function AskAgents({ items, label }: { items: { id: string; toAsk: string
   const [open, setOpen] = useState(false);
   const [consent, setConsent] = useState(false);
   const contact = useContact();
+  const brief = useBrief();
   const problem = contactProblem(contact) ?? (consent ? null : "Tick the box to share your details with these agents.");
   const rows = items.map((it) => ({ l: getListing(it.id)!, qs: questionsFor(getListing(it.id)!, it.toAsk) })).filter((r) => r.l);
   const already = new Set(saved.map((s) => s.id));
@@ -29,7 +33,7 @@ export function AskAgents({ items, label }: { items: { id: string; toAsk: string
     const now = Date.now();
     if (problem) return;
     const who = { name: contact.name.trim(), channel: CHANNEL_LABEL[contact.channel] };
-    fresh.forEach((r, i) => add({ id: r.l.id, requestedAt: now + i, questions: r.qs.map((q) => q.text), contact: who }));
+    fresh.forEach((r, i) => add({ id: r.l.id, requestedAt: now + i, questions: r.qs.map((q) => q.text), contact: who, note: draftMessage(r.l, r.qs.map((q) => q.text), { name: contact.name, brief }) }));
     setOpen(false);
     toast.success(`Sent to ${fresh.length} ${fresh.length === 1 ? "agent" : "agents"}`, { description: "Answers will appear in your shortlist." });
     router.push("/shortlist?sent=1");
@@ -57,11 +61,17 @@ export function AskAgents({ items, label }: { items: { id: string; toAsk: string
                   <div className="truncate text-[12px] text-muted-foreground">{priceLine(l)} · {l.beds}-bed · {l.size.toLocaleString()} sq ft</div>
                 </div>
               </div>
-              <ul className="space-y-1 text-[13px]">
-                {qs.map((q) => (
-                  <li key={q.id} className="flex gap-2"><Check className="mt-0.5 size-3.5 shrink-0 text-primary" /> {q.text}</li>
-                ))}
-              </ul>
+              <pre className="text-[13px] leading-relaxed whitespace-pre-wrap font-sans">{draftMessage(l, qs.map((q) => q.text), { name: contact.name, brief })}</pre>
+              <button
+                type="button"
+                className="mt-2 inline-flex items-center gap-1 text-[12px] text-primary underline-offset-4 hover:underline"
+                onClick={() => {
+                  const text = draftMessage(l, qs.map((q) => q.text), { name: contact.name, brief });
+                  navigator.clipboard?.writeText(text).then(() => toast.success("Message copied")).catch(() => toast("Select the text to copy it"));
+                }}
+              >
+                <Copy className="size-3.5" /> Copy message
+              </button>
             </div>
           ))}
           <ContactConsent agents={fresh.length} consent={consent} onConsent={setConsent} />

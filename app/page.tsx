@@ -35,6 +35,7 @@ export default function Home() {
           <span className="flex-1 text-[15px] text-muted-foreground">Tell Scout what you are looking for</span>
           <span className="rounded-full bg-primary px-3 py-1 text-[13px] font-medium text-primary-foreground">Start</span>
         </Link>
+        <Link href="/assistant?demo=1" className="inline-block text-[13px] text-primary underline underline-offset-4">Or try a 60-second demo with an example brief</Link>
         <div className="flex flex-wrap gap-2">
           {prompts.map((p) => (
             <Link

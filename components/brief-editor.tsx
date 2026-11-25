@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { NEARBY_KEYS, NEARBY_KINDS, type NearbyKind } from "@/lib/nearby";
+import { WORKPLACES, WORKPLACE_IDS, type WorkplaceId } from "@/lib/workplaces";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { FINANCING_LABEL, HOUSEHOLD_LABEL, MUST_HAVES, USE_LABEL, moveInLabel, type Brief } from "@/lib/brief";
@@ -127,6 +129,36 @@ export function BriefEditor({ initial, onSave, saveLabel = "Save brief" }: { ini
           </Select>
         </div>
       )}
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-2">
+          <Label>Work</Label>
+          <Select value={b.workplace ?? "none"} onValueChange={(v) => set("workplace", v === "none" ? null : (v as WorkplaceId))}>
+            <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Remote / not sure</SelectItem>
+              {WORKPLACE_IDS.map((w) => <SelectItem key={w} value={w}>{WORKPLACES[w].label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-2">
+          <Label>Longest commute</Label>
+          <Select value={b.maxCommuteMin ? String(b.maxCommuteMin) : "any"} onValueChange={(v) => set("maxCommuteMin", v === "any" ? null : Number(v))}>
+            <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="any">No limit</SelectItem>
+              {[15, 20, 30, 45, 60].map((n) => <SelectItem key={n} value={String(n)}>{n} min each way</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label>Close by</Label>
+        <ToggleGroup type="multiple" variant="outline" value={b.nearby} onValueChange={(v) => set("nearby", v as NearbyKind[])} className="flex w-full flex-wrap justify-start gap-2 *:rounded-md! *:border!">
+          {NEARBY_KEYS.map((k) => <ToggleGroupItem key={k} value={k} className={ON}>{NEARBY_KINDS[k].label}</ToggleGroupItem>)}
+        </ToggleGroup>
+      </div>
 
       <label className="flex cursor-pointer items-center justify-between gap-3 rounded-xl border p-3 text-[14px]">
         <span><span className="font-medium">New to Dubai?</span><span className="block text-[12px] text-muted-foreground">Explain Ejari, DEWA, cheques, chiller and move-in costs</span></span>

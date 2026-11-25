@@ -15,10 +15,18 @@ import { TopFive } from "@/components/top-five";
 import { QuickQuestions } from "@/components/quick-questions";
 import { ScoutChat } from "@/components/scout-chat";
 import { ExpatGuide } from "@/components/expat-guide";
+import { LocationCard } from "@/components/location-card";
 import { matchBrief } from "@/lib/match";
 import { EMPTY_BRIEF, bedsLabel, budgetLabel, extraTags, missingEssentials, moveInLabel, type Brief } from "@/lib/brief";
 import { saveBrief, useBrief } from "@/lib/brief-store";
 import { useSession } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
+import { useEffect } from "react";
+
+const DEMO_BRIEF: Brief = {
+  ...EMPTY_BRIEF, purpose: "rent", budgetMax: 130_000, beds: [2], moveIn: "2027-01", furnished: "yes", mustHaves: ["pets"],
+  household: "couple", maxCheques: 4, newToDubai: true, workplace: "pf-media-city", maxCommuteMin: 20, nearby: ["gym", "metro", "supermarket"],
+};
 
 const EXAMPLES = [
   "2-bed to rent under 130k a year, furnished, moving in January, I have a cat",
@@ -95,6 +103,9 @@ function Onboarding({ onDone }: { onDone: (b: Brief) => void }) {
         <Button size="lg" className="w-full" disabled={busy || !text.trim()} onClick={() => read(text)}>
           {busy ? <><Loader2 className="animate-spin" /> Reading…</> : "Continue"}
         </Button>
+        <Button variant="outline" size="lg" className="w-full" onClick={() => onDone(DEMO_BRIEF)}>
+          <Sparkles /> Try it with an example (60 seconds)
+        </Button>
         <button type="button" className="w-full text-center text-[13px] text-muted-foreground underline" onClick={() => { setAsked(true); setDraft(EMPTY_BRIEF); }}>
           Skip and fill in a form
         </button>
@@ -121,7 +132,7 @@ function BriefSummary({ brief, onEdit }: { brief: Brief; onEdit: () => void }) {
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex flex-wrap gap-1.5">
-          {tags.map((t) => <Badge key={t} variant="secondary" className="font-normal">{t}</Badge>)}
+          {tags.map((t) => <Badge key={t} variant="secondary" className="max-w-full font-normal whitespace-normal">{t}</Badge>)}
         </div>
         {!data && (
           <p className="text-[12px] text-muted-foreground">
@@ -130,6 +141,31 @@ function BriefSummary({ brief, onEdit }: { brief: Brief; onEdit: () => void }) {
         )}
       </CardContent>
     </Card>
+  );
+}
+
+function NextSteps() {
+  const { items } = useShortlist();
+  const asked = items.length > 0;
+  const answered = items.some((i) => i.reply);
+  const viewing = items.some((i) => i.viewing);
+  const steps = [
+    { done: true, label: "Tell Scout what you need" },
+    { done: true, label: "Check your trusted top 5" },
+    { done: asked, label: "Ask the agents (one tap)" },
+    { done: answered, label: "Read their answers" },
+    { done: viewing, label: "Book a viewing" },
+  ];
+  const next = steps.findIndex((x) => !x.done);
+  return (
+    <ol className="flex flex-wrap gap-x-4 gap-y-1 rounded-xl border bg-muted/30 px-4 py-2.5 text-[12px]">
+      {steps.map((x, i) => (
+        <li key={x.label} className={cn("flex items-center gap-1.5", x.done ? "text-emerald-700" : i === next ? "font-semibold text-primary" : "text-muted-foreground")}>
+          <span className={cn("grid size-4 place-items-center rounded-full text-[10px]", x.done ? "bg-emerald-600 text-white" : i === next ? "bg-primary text-white" : "bg-muted")}>{x.done ? "✓" : i + 1}</span>
+          {x.label}
+        </li>
+      ))}
+    </ol>
   );
 }
 
@@ -159,6 +195,9 @@ function WelcomeBack() {
 
 export function AssistantApp({ chatEnabled }: { chatEnabled: boolean }) {
   const brief = useBrief();
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("demo") === "1" && !brief) saveBrief(DEMO_BRIEF);
+  }, [brief]);
   const [editing, setEditing] = useState(false);
 
   if (!brief) {
@@ -169,18 +208,20 @@ export function AssistantApp({ chatEnabled }: { chatEnabled: boolean }) {
     );
   }
   return (
-    <div className="mx-auto grid max-w-6xl gap-5 px-4 pt-5 md:grid-cols-[340px_minmax(0,1fr)] md:px-8 md:pt-8">
+    <div className="mx-auto grid max-w-6xl grid-cols-1 gap-5 px-4 pt-5 md:grid-cols-[340px_minmax(0,1fr)] md:px-8 md:pt-8">
       <div className="space-y-4 md:sticky md:top-24 md:self-start">
         <BriefSummary brief={brief} onEdit={() => setEditing(true)} />
         <button type="button" className="text-[12px] text-muted-foreground underline" onClick={() => saveBrief(null)}>Start over</button>
       </div>
       <div className="min-w-0 space-y-5">
+        <NextSteps />
         <WelcomeBack />
         <TopFive brief={brief} />
         {brief.newToDubai && (() => {
           const first = brief.purpose === "rent" ? matchBrief(brief).top[0]?.listing : undefined;
           return <ExpatGuide exampleRent={first?.price} furnished={first?.furnished} />;
         })()}
+        <LocationCard priorities={brief.nearby} workplace={brief.workplace} maxCommuteMin={brief.maxCommuteMin} />
         <ScoutChat brief={brief} enabled={chatEnabled} />
       </div>
       <Sheet open={editing} onOpenChange={setEditing}>

@@ -14,7 +14,7 @@ A personal assistant inside Scout for one person searching. It learns what they 
 
 Not on the homepage. In the search itself, at the moments trust breaks:
 
-1. **Starting a search**: Scout's box ("Tell Scout what you are looking for"). One sentence becomes a brief; Scout asks only what is missing (budget, move-in, who is moving, or for buyers: live in or invest, cash or mortgage) and returns a **trusted top 5** with what fits and what to ask.
+1. **Starting a search**: Scout's box ("Tell Scout what you are looking for"). One sentence becomes a brief; Scout asks only what is missing (budget, move-in, who is moving or, for buyers, live in or invest and cash or mortgage; where they work and what they want nearby) and returns a **trusted top 5** with what fits, what to ask, a suggested offer from registered deals, and a map of their priorities and commute.
 2. **Search results**: "Scout checked these 69 ads. They are 66 real flats; 28 need a question." A "Real flats / All ads" switch; misleading ads drop into a collapsed hidden section, with reasons.
 3. **Listing page**: a "TrueUnit check" panel next to the price, the registered rents or sales for that size, and the other agencies' prices for the same flat.
 4. **New to Dubai**: one tap turns on an expat guide (Ejari, DEWA, 1 vs 4 vs 12 cheques, chiller, the 5% housing fee) and an estimate of the cash needed to move in, on the shortlist and every rental listing. Most people searching in Dubai are expats.
@@ -57,4 +57,5 @@ Honest agents get serious leads: a known budget, move-in date and clear question
 | 5 | Photo matching across the whole portal at upload | Catch reused photos before they go live, not only in one tower | Engineering help: image pipeline at scale |
 | 6 | TrueUnit inside the real Scout chat and app | The prototype has its own Scout box (LLM reads the brief; rules decide trust); the real one is where people already start | Scout's internal API and app |
 | 7 | Push notifications when an agent answers | The prototype syncs the brief and shortlist to an account; the app should ping the person | Property Finder's notification system |
-| 8 | Arabic and other languages | Five markets, many first languages | Time; needs a review by native speakers |
+| 8 | Choosing between areas by commute (Marina vs JLT vs Barsha Heights), with real metro and tram times | The prototype covers one tower, so commute is the same for every flat; it shows a car estimate and links to Google Maps | An audit per area, and a paid routing API (Google Routes) for public transport |
+| 9 | Arabic and other languages | Five markets, many first languages | Time; needs a review by native speakers |

@@ -12,6 +12,7 @@ import { AskAgents } from "@/components/ask-agents";
 import { matchBrief, type Match } from "@/lib/match";
 import { priceLine } from "@/lib/data";
 import type { Brief } from "@/lib/brief";
+import { negotiation } from "@/lib/negotiate";
 
 function MatchRow({ m, rank }: { m: Match; rank?: number }) {
   const l = m.listing;
@@ -29,10 +30,14 @@ function MatchRow({ m, rank }: { m: Match; rank?: number }) {
         <div className="truncate text-[12px] text-muted-foreground">{l.beds}-bed · {l.size.toLocaleString()} sq ft · {l.broker}</div>
         <div className="flex flex-wrap gap-1">
           {m.fits.slice(0, 3).map((f) => (
-            <Badge key={f} variant="secondary" className="gap-1 bg-emerald-50 font-normal text-emerald-800"><CheckCircle2 /> {f}</Badge>
+            <Badge key={f} variant="secondary" className="max-w-full gap-1 bg-emerald-50 text-left font-normal whitespace-normal text-emerald-800"><CheckCircle2 /> {f}</Badge>
           ))}
+          {(() => {
+            const n = negotiation(l);
+            return n && n.tone === "high" ? <Badge variant="secondary" className="bg-sky-50 font-normal text-sky-800">Offer ~AED {n.offer.toLocaleString("en-US")}</Badge> : null;
+          })()}
           {m.toAsk.slice(0, 2).map((q) => (
-            <Badge key={q} variant="secondary" className="gap-1 bg-amber-50 font-normal text-amber-800"><HelpCircle /> {q}</Badge>
+            <Badge key={q} variant="secondary" className="max-w-full gap-1 bg-amber-50 text-left font-normal whitespace-normal text-amber-800"><HelpCircle /> {q}</Badge>
           ))}
         </div>
       </div>

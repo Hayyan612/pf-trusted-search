@@ -49,3 +49,11 @@ I built this with Claude (Claude Code) as my main tool. These are moments where 
 **How I caught it.** I read every one of the flagged ads before keeping the rule. "Tolu" is the agent's own short name; "Monty Darley" and "Montgomery Darley" are the same person too.
 
 **What changed.** Names that share a first or last name, or start the same way, count as the same person; titles are ignored; the agency-name check only looks at the words right after the name. 5 real cases remain, each read by hand.
+
+## 7. Scout's own model filled in a move-in date nobody gave
+
+**What the AI said.** Testing the live assistant with "2-bed to rent, furnished, I have a cat", the LLM that reads the brief returned move-in "As soon as possible". I never said when. Scout then skipped the move-in question and would have asked agents about the wrong date.
+
+**How I caught it.** Running the whole flow in Chrome: the quick questions asked for budget and household but not move-in, and the review screen showed "As soon as possible".
+
+**What changed.** The instructions now say to fill a field only if the person said it, and that moveIn must be null when no date is given; the field description says the same. The review screen stays, so the person can always correct what the model read.

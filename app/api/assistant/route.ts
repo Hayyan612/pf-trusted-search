@@ -25,7 +25,7 @@ function shortlistPayload(brief: Brief) {
 }
 
 export async function POST(req: Request) {
-  const model = scoutModel();
+  const model = await scoutModel();
   if (!model) return NextResponse.json({ error: "Chat is not switched on in this prototype. Use the brief editor." }, { status: 503 });
   const body = await req.json().catch(() => null);
   const messages: UIMessage[] = Array.isArray(body?.messages) ? body.messages.slice(-20) : [];

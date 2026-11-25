@@ -61,7 +61,7 @@ function ToolCard({ part }: { part: { type: string; state?: string; toolCallId?:
         <div className="text-[13px] font-medium">Brief updated · {counts.fit} flats fit, {counts.trusted} look genuine</div>
         <div className="flex flex-wrap gap-1">
           {[b.purpose === "rent" ? "Rent" : "Buy", budgetLabel(b), bedsLabel(b.beds), b.furnished === "any" ? "Any furnishing" : b.furnished === "yes" ? "Furnished" : "Unfurnished", `Move in: ${moveInLabel(b.moveIn)}`, ...extraTags(b), ...b.mustHaves.map((m) => m[0].toUpperCase() + m.slice(1))].map((t) => (
-            <Badge key={t} variant="secondary" className="font-normal">{t}</Badge>
+            <Badge key={t} variant="secondary" className="max-w-full font-normal whitespace-normal">{t}</Badge>
           ))}
         </div>
         <ShortlistMini top={(out.top as TopItem[]).slice(0, 5)} />
@@ -102,7 +102,10 @@ export function ScoutChat({ brief, enabled }: { brief: Brief; enabled: boolean }
   const [input, setInput] = useState("");
   const { messages, sendMessage, status, error } = useChat({ transport: new DefaultChatTransport({ api: "/api/assistant" }) });
   const end = useRef<HTMLDivElement>(null);
-  useEffect(() => end.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }), [messages]);
+  useEffect(() => {
+    // scrollIntoView returns a Promise in newer browsers; never hand it to React as a cleanup.
+    void end.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [messages]);
   const busy = status === "submitted" || status === "streaming";
 
   const send = (text: string) => {

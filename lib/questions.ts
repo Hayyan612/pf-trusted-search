@@ -30,7 +30,10 @@ export function questionsFor(l: Listing, fromBrief: string[] = []): { id: string
     if (c.code === "same_unit") extra.push({ id: c.code, text: "This flat is advertised by other agencies at other prices. Which price is current?", why: c.label, on: true });
     if (c.code === "stale") extra.push({ id: c.code, text: "The ad is a few months old. Is it really still free?", why: c.label, on: true });
   }
-  fromBrief.forEach((text, i) => extra.push({ id: `brief-${i}`, text, why: "From your brief", on: true }));
+  const already = (t: string) => base.some((q) => /chiller/i.test(q.text) && /chiller/i.test(t));
+  fromBrief.forEach((text, i) => {
+    if (!already(text)) extra.push({ id: `brief-${i}`, text, why: "From your brief", on: true });
+  });
   const seen = new Set<string>();
   return [...base, ...extra].filter((q) => (seen.has(q.id) ? false : (seen.add(q.id), true)));
 }

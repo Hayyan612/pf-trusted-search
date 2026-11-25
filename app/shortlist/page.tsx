@@ -20,7 +20,9 @@ export default function ShortlistPage() {
   const { items, update, remove, clear } = useShortlist();
   const { data: session } = useSession();
   const [justSent, setJustSent] = useState(false);
-  useEffect(() => setJustSent(new URLSearchParams(window.location.search).get("sent") === "1"), []);
+  useEffect(() => {
+    setJustSent(new URLSearchParams(window.location.search).get("sent") === "1");
+  }, []);
 
   const rank = (i: (typeof items)[number]) => (!i.reply ? 2 : i.reply.outcome === "confirmed" ? 0 : i.reply.outcome === "changed" ? 1 : 3);
   const sorted = [...items].sort((a, b) => rank(a) - rank(b));

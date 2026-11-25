@@ -16,6 +16,9 @@ import { PhotoGallery } from "@/components/photo-gallery";
 import { PriceTrend } from "@/components/price-trend";
 import { ListingDescription } from "@/components/listing-description";
 import { UpfrontCosts, Glossary } from "@/components/expat-guide";
+import { LocationCard } from "@/components/location-card";
+import { negotiation } from "@/lib/negotiate";
+import { HandCoins } from "lucide-react";
 import { getListing, getUnit, aed, listedAgo, trendFor, BUILDING_DETAILS, type Severity } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
@@ -48,6 +51,7 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
   const order = { hide: 0, ask: 1, ok: 2 } as const;
   const checks = [...l.checks].sort((a, b) => order[a.severity] - order[b.severity]);
   const trend = trendFor(l.kind, l.beds);
+  const deal = negotiation(l);
   const what = l.kind === "rent" ? "rents" : "sales";
 
   return (
@@ -138,6 +142,20 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
             </Card>
           )}
 
+          {deal && (
+            <Card className={cn(deal.tone === "high" ? "border-amber-200" : deal.tone === "low" ? "border-sky-200" : "border-emerald-200")}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2"><HandCoins className="size-4 text-primary" /> What to offer</CardTitle>
+                <CardDescription>From the registered deals above. A suggestion, not a promise.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-1 text-[14px]">
+                <div className="text-[18px] font-semibold">{deal.headline}</div>
+                <p className="text-muted-foreground">{deal.why}</p>
+                <p>{deal.tip}</p>
+              </CardContent>
+            </Card>
+          )}
+
           {Object.keys(trend).length > 0 && (
             <Card>
               <CardHeader>
@@ -177,6 +195,8 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
             </CardHeader>
             <CardContent><ListingDescription text={l.descriptionText || l.description} /></CardContent>
           </Card>
+
+          <LocationCard />
 
           {l.kind === "rent" && (
             <Card>
