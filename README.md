@@ -47,7 +47,7 @@ python3 scripts/write_audit.py  # AUDIT.md
 |---|---|
 | All 242 ads: price, size, beds, photos, agent, agency, text, listing date, Verified badge, captured from propertyfinder.ae on 25 Nov 2026 (`data/raw/princess.json`) | Sending questions to the agent, and the agent's reply (simulated after a few seconds) |
 | Every check and every reason shown (`scripts/build_data.py`) | Agent view numbers (reply time, accuracy) |
-| Photo matches between ads (perceptual hashes of each ad's first 3 photos) | Web-to-app sync and notifications (described, not built) |
+| Photo matches between ads (perceptual hashes of each ad's first 3 photos) | Push notifications when an agent answers (described, not built) |
 | Tower medians per sq ft, from the live ads | Scout's chat box on the home screen (the suggestions link into search) |
 | Accounts and the synced shortlist (real, stored in Postgres) | |
 
