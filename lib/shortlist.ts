@@ -9,6 +9,7 @@ export interface ShortlistItem {
   questions: string[];
   note?: string;
   reply?: AgentReply;
+  viewing?: { slot: string; status: "requested" | "confirmed"; at: number };
 }
 
 export interface AgentReply {
@@ -16,6 +17,7 @@ export interface AgentReply {
   at: number;
   minutes: number;
   lines: string[];
+  slots?: string[];
 }
 
 const KEY = "trueunit-shortlist-v1";

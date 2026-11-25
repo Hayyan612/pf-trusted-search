@@ -16,6 +16,11 @@ export function ensureDb(): Promise<void> {
         updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
         PRIMARY KEY (user_id, listing_id)
       )`);
+      await pool.query(`CREATE TABLE IF NOT EXISTS brief (
+        user_id TEXT PRIMARY KEY,
+        brief JSONB NOT NULL,
+        updated_at_ms BIGINT NOT NULL
+      )`);
     })().catch((err) => {
       ready = null;
       throw err;

@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { useShortlist } from "@/lib/shortlist";
 
 const items = [
-  { href: "/", label: "Scout", icon: Sparkles },
+  { href: "/assistant", label: "Scout", icon: Sparkles },
   { href: "/search?kind=rent", label: "Search", icon: Search, match: "/search" },
   { href: "/shortlist", label: "Shortlist", icon: Heart },
   { href: "/agent", label: "Agent view", icon: Briefcase },

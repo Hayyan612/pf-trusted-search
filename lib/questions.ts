@@ -2,7 +2,7 @@ import type { Listing } from "@/lib/data";
 import type { AgentReply } from "@/lib/shortlist";
 
 /** Questions Scout sends to the agent. The base set depends on rent or buy; extra ones come from the listing's checks. */
-export function questionsFor(l: Listing): { id: string; text: string; why?: string; on: boolean }[] {
+export function questionsFor(l: Listing, fromBrief: string[] = []): { id: string; text: string; why?: string; on: boolean }[] {
   const price = l.price.toLocaleString("en-US");
   const base =
     l.kind === "rent"
@@ -29,6 +29,7 @@ export function questionsFor(l: Listing): { id: string; text: string; why?: stri
     if (c.code === "same_unit") extra.push({ id: c.code, text: "This flat is advertised by other agencies at other prices. Which price is current?", why: c.label, on: true });
     if (c.code === "stale") extra.push({ id: c.code, text: "The ad is a few months old. Is it really still free?", why: c.label, on: true });
   }
+  fromBrief.forEach((text, i) => extra.push({ id: `brief-${i}`, text, why: "From your brief", on: true }));
   const seen = new Set<string>();
   return [...base, ...extra].filter((q) => (seen.has(q.id) ? false : (seen.add(q.id), true)));
 }
@@ -44,7 +45,7 @@ export function simulateReply(l: Listing): AgentReply {
   const h = hash(l.id);
   const minutes = 6 + (h % 50);
   const codes = new Set(l.checks.map((c) => c.code));
-  const slots = ["Thu 6:30 pm", "Sat 11:00 am"];
+  const slots = ["Thu 27 Nov, 6:30 pm", "Sat 29 Nov, 11:00 am"];
   // Deposit: usually 5% of annual rent unfurnished, 10% furnished (see AI-LOG.md #3). Service charges are not guessed.
   const deposit = l.furnished === "YES" ? "10%" : "5%";
   const cheques =
@@ -52,17 +53,17 @@ export function simulateReply(l: Listing): AgentReply {
       ? `${1 + (h % 4)} cheques, ${deposit} security deposit, agency fee 5% of the yearly rent`
       : "Vacant on transfer. I will send the latest service charge statement.";
   if (codes.has("stale") && h % 2 === 0) {
-    return { outcome: "unavailable", at: Date.now(), minutes, lines: [`Sorry, this one was ${l.kind === "rent" ? "let" : "sold"} last month. The ad will be removed.`] };
+    return { outcome: "unavailable", at: Date.now(), minutes, slots: [], lines: [`Sorry, this one was ${l.kind === "rent" ? "let" : "sold"} last month. The ad will be removed.`] };
   }
   if (codes.has("photos_other_unit")) {
-    return { outcome: "changed", at: Date.now(), minutes, lines: ["The photos are from a similar unit in the tower. I will send photos of this flat.", `Price ${l.price.toLocaleString("en-US")} is correct.`, `Viewing: ${slots[1]}`] };
+    return { outcome: "changed", at: Date.now(), minutes, slots: [slots[1]], lines: ["The photos are from a similar unit in the tower. I will send photos of this flat.", `Price ${l.price.toLocaleString("en-US")} is correct.`, `Viewing: ${slots[1]}`] };
   }
   if (codes.has("tenanted") || codes.has("available_later")) {
-    return { outcome: "changed", at: Date.now(), minutes, lines: ["Tenant leaves on 20 December. You can sign now and move in after that.", cheques, `Viewing: ${slots[0]} (tenant present)`] };
+    return { outcome: "changed", at: Date.now(), minutes, slots: [slots[0]], lines: ["Tenant leaves on 20 December. You can sign now and move in after that.", cheques, `Viewing: ${slots[0]} (tenant present)`] };
   }
   if (codes.has("same_unit") || codes.has("price_low")) {
     const final = Math.round((l.price * 1.03) / 1000) * 1000;
-    return { outcome: "changed", at: Date.now(), minutes, lines: [`Still available. The current price is AED ${final.toLocaleString("en-US")}; the lower ad is out of date.`, cheques, `Viewing: ${slots.join(" or ")}`] };
+    return { outcome: "changed", at: Date.now(), minutes, slots, lines: [`Still available. The current price is AED ${final.toLocaleString("en-US")}; the lower ad is out of date.`, cheques, `Viewing: ${slots.join(" or ")}`] };
   }
-  return { outcome: "confirmed", at: Date.now(), minutes, lines: ["Yes, still available.", `AED ${l.price.toLocaleString("en-US")} is the final price.`, cheques, `Viewing: ${slots.join(" or ")}`] };
+  return { outcome: "confirmed", at: Date.now(), minutes, slots, lines: ["Yes, still available.", `AED ${l.price.toLocaleString("en-US")} is the final price.`, cheques, `Viewing: ${slots.join(" or ")}`] };
 }

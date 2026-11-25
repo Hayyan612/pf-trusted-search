@@ -7,6 +7,7 @@ import { BottomNav } from "@/components/bottom-nav";
 import { TopNav } from "@/components/top-nav";
 import { UserMenu } from "@/components/user-menu";
 import { ShortlistSync } from "@/components/shortlist-sync";
+import { BriefSync } from "@/components/brief-sync";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <BottomNav />
         <Toaster position="top-center" />
         {AUTH_ENABLED && <ShortlistSync />}
+        {AUTH_ENABLED && <BriefSync />}
       </body>
     </html>
   );

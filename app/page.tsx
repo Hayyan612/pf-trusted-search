@@ -30,10 +30,11 @@ export default function Home() {
       </section>
 
       <section className="space-y-2 md:col-start-1">
-        <div className="flex items-center gap-2 rounded-full border bg-white px-4 py-3 shadow-sm">
+        <Link href="/assistant" className="flex items-center gap-2 rounded-full border bg-white px-4 py-3 shadow-sm transition hover:border-primary/40 hover:shadow-md">
           <Sparkles className="size-4 text-primary" />
-          <span className="text-[15px] text-muted-foreground">What are you looking for?</span>
-        </div>
+          <span className="flex-1 text-[15px] text-muted-foreground">Tell Scout what you are looking for</span>
+          <span className="rounded-full bg-primary px-3 py-1 text-[13px] font-medium text-primary-foreground">Start</span>
+        </Link>
         <div className="flex flex-wrap gap-2">
           {prompts.map((p) => (
             <Link
