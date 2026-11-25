@@ -1,10 +1,10 @@
 # TrueUnit: the real flats behind the ads
 
-A Scout feature for one person searching. It groups ads into real flats, flags the ones that look misleading and says why, and asks the agent before the person spends a call or a Saturday on it. The agent stays in the deal.
+A personal assistant inside Scout for one person searching. It learns what they need in a minute, groups ads into real flats, hides the misleading ones and says why, gives them a short list they can trust, and asks the agents for them before they spend a call or a Saturday. The agent stays in the deal.
 
 ## The problem behind the problem
 
-**What the audit showed.** I checked all 242 live ads in Princess Tower, Dubai Marina (144 rent, 98 sale) on 25 Nov 2026. 99 of 242 (41%) need a question before they are worth a call: the same flat listed again at another price, also listed for sale or rent, "tenanted" in the text, holiday-home pricing shown as a yearly rent, or live for 90+ days. 6 use photos of a different flat. Identical photos, re-watermarked by two agencies, sell one flat at AED 2.0M and 2.1M. **All 6 likely-misleading ads carry the Verified badge.** Against registered deals (DLD data via DataGuru), the typical rental ad asks 8% more than the same size actually rented for, and 58 of 144 rental ads ask 15%+ more, while registered 2-bed rents in the tower fell from AED 153,750 to 123,750 in a year. Ads lag the market.
+**What the audit showed.** I checked all 242 live ads in Princess Tower, Dubai Marina (144 rent, 98 sale) on 25 Nov 2026. 98 of 242 (40%) need a question before they are worth a call: the same flat listed again at another price, also listed for sale or rent, "tenanted" or an out-of-date date in the text, holiday-home pricing shown as a yearly rent, a different person named as the contact (5 ads), or live for 90+ days. 6 use photos of a different flat. Identical photos, re-watermarked by two agencies, sell one flat at AED 2.0M and 2.1M. **All 6 likely-misleading ads carry the Verified badge.** Against registered deals (DLD data via DataGuru), the typical rental ad asks 8% more than the same size actually rented for, and 58 of 144 rental ads ask 15%+ more, while registered 2-bed rents in the tower fell from AED 153,750 to 123,750 in a year. Ads lag the market. No ad used photos from the 8 neighbouring towers I checked: here, the misleading photos come from other flats in the same tower.
 
 **Why it exists.** A listing is an ad that buys calls, not stock. Agents pay for visibility and are judged on leads, so a second copy of a flat, a low price or a let flat left online costs them nothing and still brings calls. Property Finder, Bayut and Dubizzle all check the ad when it is posted (Verified, TruCheck, DLD permits). Nobody checks the flat when the person is deciding.
 
@@ -12,13 +12,14 @@ A Scout feature for one person searching. It groups ads into real flats, flags t
 
 ## Where it lives
 
-Not on the homepage. At the three moments trust breaks:
+Not on the homepage. In the search itself, at the moments trust breaks:
 
-1. **Search results**: a banner, "Scout checked these 69 ads. They are 66 real flats; 21 need a question." with a "Real flats / All ads" switch. Misleading ads drop into a collapsed "hidden" section, with reasons.
-2. **Listing page**: a "TrueUnit check" panel next to the price, with every reason and the other agencies' prices for the same flat.
-3. **Before contacting**: "Confirm before I call" next to Call and WhatsApp. Scout sends the questions this listing needs and brings the answers back.
+1. **Starting a search**: Scout's box ("Tell Scout what you are looking for"). One sentence becomes a brief; Scout asks only what is missing (budget, move-in, who is moving, or for buyers: live in or invest, cash or mortgage) and returns a **trusted top 5** with what fits and what to ask.
+2. **Search results**: "Scout checked these 69 ads. They are 66 real flats; 28 need a question." A "Real flats / All ads" switch; misleading ads drop into a collapsed hidden section, with reasons.
+3. **Listing page**: a "TrueUnit check" panel next to the price, the registered rents or sales for that size, and the other agencies' prices for the same flat.
+4. **Before contacting**: "Confirm before I call" next to Call, or "Ask all 5 agents" from the shortlist. Scout asks for a name, how to reply (WhatsApp, email or app only) and consent, then sends each agent only the questions for their flat.
 
-The shortlist and Scout's threads with agents live in the Property Finder account, so a search started on the web continues in the app, with a push notification when an agent answers. Scout's chat links straight into the same views.
+The brief, shortlist and answers live in the Property Finder account (built in the prototype: guest in the browser, synced when signed in), so a search started on the web continues in the app.
 
 ## Why use it, and when not to
 
@@ -34,7 +35,7 @@ Honest agents get serious leads: a known budget, move-in date and clear question
 
 **The big metrics for a portal**: searchers who become leads (contact rate), leads that become viewings, time from first search to a signed deal, searcher return rate; for agents, cost per lead and spend renewal.
 
-**What TrueUnit moves.** Lead-to-viewing rate up (leads are pre-qualified and the flat is confirmed). Raw contacts per search flat or slightly down (fewer calls on bait). Return rate up. Rough size, as a hypothesis to test: if 41% of ads need a question, removing wasted calls could lift lead-to-viewing by 10-20%.
+**What TrueUnit moves.** Lead-to-viewing rate up (leads are pre-qualified and the flat is confirmed). Raw contacts per search flat or slightly down (fewer calls on bait). Return rate up. Rough size, as a hypothesis to test: if 40% of ads need a question, removing wasted calls could lift lead-to-viewing by 10-20%.
 
 ## The one number
 
@@ -53,6 +54,6 @@ Honest agents get serious leads: a known budget, move-in date and clear question
 | 3 | Unit identity from the DLD permit (building, floor, unit) | Duplicates without relying on photos; catches "same photos, different size" | Permit-to-unit data is internal / DLD integration |
 | 4 | Price checks against all DLD registered deals, not just the last 5 per size | The prototype uses the 5 recent rents and sales Property Finder shows per listing (DataGuru); a full history would let it weight by floor, view and date | Internal DataGuru access |
 | 5 | Photo matching across the whole portal at upload | Catch reused photos before they go live, not only in one tower | Engineering help: image pipeline at scale |
-| 6 | Scout understanding requests in plain words, inside Scout's chat | The entry point people already use | Scout's internal API |
-| 7 | Account sync and push notifications between web and app | The web-to-app handoff | Internal accounts and notification systems |
+| 6 | TrueUnit inside the real Scout chat and app | The prototype has its own Scout box (LLM reads the brief; rules decide trust); the real one is where people already start | Scout's internal API and app |
+| 7 | Push notifications when an agent answers | The prototype syncs the brief and shortlist to an account; the app should ping the person | Property Finder's notification system |
 | 8 | Arabic and other languages | Five markets, many first languages | Time; needs a review by native speakers |

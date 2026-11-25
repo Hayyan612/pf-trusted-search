@@ -41,3 +41,11 @@ I built this with Claude (Claude Code) as my main tool. These are moments where 
 **How I caught it.** Reading the audit table on 25 November: that date had already passed. The ad text is simply out of date, which is a different signal (the ad was not updated).
 
 **What changed.** Noted as a fix: a past date in the ad should read "ad text out of date, ask if still free", not "available later".
+
+## 6. "Tolu is a different agent from Tolulope"
+
+**What the AI said.** The new check for ads that name a different person to contact flagged an ad listed under Tolulope Majekodunmi because the text says "Tolu from White and Co". It also flagged "Mr" as a person, and missed a real case because the agency name came right after the person's name.
+
+**How I caught it.** I read every one of the flagged ads before keeping the rule. "Tolu" is the agent's own short name; "Monty Darley" and "Montgomery Darley" are the same person too.
+
+**What changed.** Names that share a first or last name, or start the same way, count as the same person; titles are ignored; the agency-name check only looks at the words right after the name. 5 real cases remain, each read by hand.

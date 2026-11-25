@@ -31,3 +31,18 @@ How Property Finder already handles it:
 - Its own listing data already carries a quality score, an availability flag and an "under offer elsewhere" flag, but people searching do not see a combined view.
 
 What this says: everyone checks the **ad** when it is posted. Nobody checks the **flat** at the moment the person decides, and nobody collapses many ads into one real flat. In our audit, all 6 listings TrueUnit marks likely misleading carry the Verified badge.
+
+## Later decisions (25 Nov, after the first build; times approximate)
+
+| Time | Decision | Why | Decided by |
+|---|---|---|---|
+| 13:40 | Responsive: a real desktop layout, not a phone frame on desktop | Reviewers will open it on laptops too | Hayyan |
+| 13:45 | Optional accounts (email, Google), guests never blocked | Makes the web-to-app handoff real without a login wall for reviewers | Hayyan |
+| 14:10 | Look and structure close to Property Finder's listing page (agent card, details, regulatory info) | Familiar to the team; keeps attention on the idea | Hayyan |
+| 14:35 | Use DataGuru's registered rents and sales (shown on each listing) for the price check, instead of live-ad medians | Live ads are a biased benchmark; registered deals show what people actually paid | Hayyan |
+| 14:40 | shadcn components throughout, interactive price chart | Consistent, accessible UI | Hayyan |
+| 14:45 | Dropped the Vercel copy | One live link is enough; less to maintain | Hayyan |
+| 15:00 | Build a personal assistant, not just a better search page | The brief asks for a personal assistant and a short list they can trust | Hayyan |
+| 15:00 | LLM only reads the person's words and picks which component to show; deterministic rules decide trust; nothing is sent to agents without the person's tap | Explainable, defensible, and cannot invent listings or prices | Hayyan |
+| 15:05 | Onboarding: one sentence, then only the missing essentials, different for renters and buyers; contact and consent at the moment of sending; sign-up offered after sending | A minute to value; ask for personal data only when it is needed | Hayyan |
+| 15:20 | Checked photos against 343 ads in 8 neighbouring towers: no match. Added a check for ads that name a different person to contact (5 ads) | The brief asks whether photos match the building; the agent mismatch came up while reading ads | Hayyan |

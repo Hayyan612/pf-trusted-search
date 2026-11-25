@@ -1,5 +1,6 @@
 """Write AUDIT.md from data/app-data.json. Hand-check notes are added for the pairs checked by eye in evidence/pairs-*.jpg."""
 import json, os
+NB_TOWERS, NB_ADS = 8, 343  # data/raw/neighbours.json, scripts/photos_neighbours.py
 from collections import Counter
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 d = json.load(open(os.path.join(ROOT, "data/app-data.json"))); L = {x["id"]: x for x in d["listings"]}
@@ -21,7 +22,7 @@ def yn(b): return "Yes" if b else "No"
 picked = []
 for x in d["listings"]:
     codes = {c["code"] for c in x["checks"]}
-    if x["id"] in EYE or codes & {"photos_other_unit", "same_unit", "dual_listed", "short_stay", "tenanted", "price_low", "below_registered", "available_later"}:
+    if x["id"] in EYE or codes & {"photos_other_unit", "same_unit", "dual_listed", "short_stay", "tenanted", "price_low", "below_registered", "available_later", "other_agent"}:
         picked.append(x)
 clean = [x for x in d["listings"] if x["status"] == "ok"][:6]
 rows = picked + clean
@@ -40,20 +41,22 @@ import statistics as st
 for k in ("rent", "sale"):
     xs = [x for x in d["listings"] if x["kind"] == k and x.get("vsRegistered") is not None]
     if xs: lines.append(f"- {k.capitalize()} ads vs registered deals: median {st.median(x['vsRegistered'] for x in xs):+.0f}%, {sum(1 for x in xs if x['vsRegistered'] >= 15)} of {len(xs)} ask 15%+ more")
+lines += ["", f"**Photos from another building.** The first 3 photos of every Princess Tower ad were compared with {NB_ADS} ads from {NB_TOWERS} neighbouring Dubai Marina towers (23 Marina, Elite Residence, Marina 101, The Torch, Marina Pinnacle, Sulafa Tower, Marina Crown, Ocean Heights). **No match.** In this tower, misleading photos come from other flats in the same building, not from other buildings. The ad texts were also searched for other tower names: only agency office addresses and trivia came up.", "",
+          "**A different person to contact.** 5 ads tell you to contact someone other than the agent the listing is under (for example a listing under Sam McCone that says to contact Umair Masood, and one under Sadaf Javaid that gives another person's mobile number in the text). Nicknames of the same person were excluded."]
 lines += ["", f"All {sum(1 for x in d['listings'] if x['status']=='hide')} ads marked likely misleading carry Property Finder's Verified badge.", "",
  f"## Listing by listing ({len(rows)} ads)", "",
  "\"vs registered deals\" compares the ad with the median of the last 5 registered rents or sales for the same size (DLD records shown on Property Finder via DataGuru). \"vs live ads\" compares price per sq ft with today's other ads for the same bedrooms.", "",
- "| # | Ad | Rent/Sale | Beds, sq ft | Price (AED) | vs registered deals | vs live ads | Same flat listed again? | Photos match this flat? | Likely available? | Anything else | Checked by eye | TrueUnit |",
- "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+ "| # | Ad | Rent/Sale | Beds, sq ft | Price (AED) | vs registered deals | vs live ads | Same flat listed again? | Photos match this flat? | Photos from another building? | Likely available? | Anything else | Checked by eye | TrueUnit |",
+ "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
 for n, x in enumerate(rows, 1):
     codes = {c["code"]: c for c in x["checks"]}
     same = codes.get("same_unit", {}).get("detail") or (codes["dual_listed"]["label"] if "dual_listed" in codes else "No")
     photos = "No: " + codes["photos_other_unit"]["detail"] if "photos_other_unit" in codes else ("Unclear: one shared photo" if "photo_similar" in codes else "No match found")
     avail = "; ".join(codes[k]["label"] for k in ("tenanted", "available_later", "stale") if k in codes) or "Nothing says otherwise"
-    other = "; ".join(codes[k]["label"] for k in ("short_stay", "price_low") if k in codes) + ("" if x["verified"] else "; no Verified badge")
+    other = "; ".join(codes[k]["label"] for k in ("short_stay", "price_low", "below_registered", "other_agent") if k in codes) + ("" if x["verified"] else "; no Verified badge")
     vs = "" if x["vsMedian"] is None else f"{x['vsMedian']:+d}%"
     vr = "" if x.get("vsRegistered") is None else f"{x['vsRegistered']:+d}%"
     verdict = {"ok": "Looks genuine", "ask": "Ask first", "hide": "Hide"}[x["status"]]
-    lines.append(f"| {n} | [{x['id']}]({x['url']}) | {x['kind']} | {x['beds']}, {x['size']:,} | {x['price']:,} | {vr} | {vs} | {same} | {photos} | {avail} | {other.strip('; ') or '-'} | {EYE.get(x['id'], '')} | {verdict} |")
+    lines.append(f"| {n} | [{x['id']}]({x['url']}) | {x['kind']} | {x['beds']}, {x['size']:,} | {x['price']:,} | {vr} | {vs} | {same} | {photos} | No match | {avail} | {other.strip('; ') or '-'} | {EYE.get(x['id'], '')} | {verdict} |")
 open(os.path.join(ROOT, "AUDIT.md"), "w").write("\n".join(lines) + "\n")
 print(len(rows), "rows")

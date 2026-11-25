@@ -1,54 +1,66 @@
 # TrueUnit by Scout (prototype)
 
-A Scout feature that shows the real flats behind the ads, explains which ads look misleading, and asks the agent before you call. Built on real Property Finder listings from Princess Tower, Dubai Marina.
+A personal search assistant inside Scout. It learns what one person needs, checks every ad in the building, hides the misleading ones with reasons, gives them a short list they can trust, and asks the agents for them before they call. The agent stays in the deal. Built on real Property Finder listings from Princess Tower, Dubai Marina.
 
-**Live:** https://trueunit.hayyan.space (works on a phone and on desktop)
+**Live:** https://trueunit.hayyan.space (phone and desktop)
 
 Try:
-- **Renter flow:** Scout home > "2-bed to rent" > Real flats > open a flat > Confirm before I call > Shortlist (agent reply arrives after a few seconds)
-- **Buyer flow:** Buy > 2 bed > open the hidden section at the bottom > a "Likely misleading" ad and why
+- **Renter flow:** Scout assistant > "2-bed to rent under 130k a year, furnished, moving in January, I have a cat" > answer the quick questions > Build my shortlist > Ask all 5 agents (add a name and number, tick consent) > Shortlist: answers arrive in a few seconds > pick a viewing time
+- **Buyer flow:** Scout assistant > "Buy a 2-bed to rent out, budget 2.5 million" > cash or mortgage > shortlist with investor questions (current rent, service charges)
+- **Browse instead:** Rent or Buy > Real flats vs All ads > open the hidden section at the bottom > a "Likely misleading" ad and why
 - **Agent side:** Agent view
+
+## How Scout works
+
+| Part | Who decides | Why |
+|---|---|---|
+| Reading the person's words into a brief | An LLM (Vercel AI SDK, OpenRouter, structured output). Falls back to built-in rules without a key. | Language is what LLMs are good at. The brief is shown back and editable. |
+| Follow-up questions for missing essentials | Code (`missingEssentials`) | Ask only what is missing: budget, bedrooms, move-in, who is moving / live-in or invest / cash or mortgage. |
+| Which ads are misleading, and the trusted top 5 | Deterministic rules (`scripts/build_data.py`, `lib/match.ts`) | Explainable and repeatable. The model never judges trust. |
+| Chat ("only furnished", "why is #1 top?") | The LLM picks from 5 tools; each result renders as a shadcn component filled from real data | Generative UI without letting the model invent a listing or price. |
+| Contacting agents | The person, after adding contact details and ticking consent | Nothing is sent without a tap. |
 
 ## Accounts (optional)
 
-Everything works without an account. Signing up (email and password, or Google) saves your shortlist and the agents' answers to your account, so a search started on a laptop continues on a phone. This is the web-to-app handoff from the one-pager, made real.
+Everything works as a guest: the brief, shortlist and contact details stay in the browser. Signing up (email and password, or Google) saves the brief, shortlist and agents' answers to the account, so a search started on a laptop continues on a phone. The newer copy wins when you sign in.
 
 - Auth: Better Auth on Postgres. Tables are created on first use (`lib/db.ts`); `/api/health` reports the database state.
-- Shortlist sync: `GET/PUT /api/shortlist`, merged with the device's shortlist when you sign in.
-- Google sign-in turns on when `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are set.
+- Sync: `GET/PUT /api/shortlist` and `GET/PUT /api/brief`.
+- Google sign-in turns on with `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. Scout's AI turns on with `OPENROUTER_API_KEY` (model: `ASSISTANT_MODEL`, default `google/gemini-2.5-flash`).
 
 ## Docs
 
 - [ONE-PAGER.md](ONE-PAGER.md): the problem, where it lives, metrics, the test, what is missing
-- [AUDIT.md](AUDIT.md): all 242 ads checked, 88 listed one by one with links
-- [RULES.md](RULES.md): the rules and where each one is wrong
-- [AI-LOG.md](AI-LOG.md): five times the AI was confidently wrong, and how it was caught
+- [AUDIT.md](AUDIT.md): all 242 ads checked, 92 listed one by one with links
+- [RULES.md](RULES.md): 10 rules, where each one is wrong, and who gets hurt
+- [AI-LOG.md](AI-LOG.md): six times the AI was confidently wrong, and how it was caught
 - [DECISIONS.md](DECISIONS.md): decisions with times, and the research behind them
 
 ## How to run
 
 ```bash
 pnpm install
-cp .env.example .env.local   # DATABASE_URL, BETTER_AUTH_SECRET, BETTER_AUTH_URL (Google keys optional)
-pnpm dev            # http://localhost:3000
+cp .env.example .env.local   # DATABASE_URL, BETTER_AUTH_SECRET, BETTER_AUTH_URL; optional Google, OpenRouter, SMTP keys
+pnpm dev                     # http://localhost:3000
 ```
 
 Rebuild the data (needs `uv`):
 
 ```bash
-uv run scripts/photos.py      # photo fingerprints for every ad
-uv run scripts/build_data.py  # checks + real-flat grouping -> data/app-data.json
-python3 scripts/write_audit.py  # AUDIT.md
+uv run scripts/photos.py             # photo fingerprints for every ad
+uv run scripts/photos_neighbours.py  # photos vs 343 ads in 8 neighbouring towers
+uv run scripts/build_data.py         # checks, registered deals, real-flat grouping -> data/app-data.json
+python3 scripts/write_audit.py       # AUDIT.md
 ```
 
 ## What is real and what is mocked
 
 | Real | Mocked |
 |---|---|
-| All 242 ads: price, size, beds, photos, agent, agency, text, listing date, Verified badge, captured from propertyfinder.ae on 25 Nov 2026 (`data/raw/princess.json`) | Sending questions to the agent, and the agent's reply (simulated after a few seconds) |
+| All 242 ads: price, size, beds, photos, agent, agency, text, listing date, Verified badge, captured from propertyfinder.ae on 25 Nov 2026 (`data/raw/`) | Sending questions to agents, their replies, and viewing confirmation (simulated after a few seconds) |
 | Every check and every reason shown (`scripts/build_data.py`) | Agent view numbers (reply time, accuracy) |
-| Photo matches between ads (perceptual hashes of each ad's first 3 photos) | Push notifications when an agent answers (described, not built) |
-| Tower medians per sq ft, from the live ads | Scout's chat box on the home screen (the suggestions link into search) |
-| Accounts and the synced shortlist (real, stored in Postgres) | |
+| Registered rents and sales per size and price trends: the DLD records Property Finder shows via DataGuru (`data/raw/dataguru.json`) | Push notifications when an agent answers (described, not built) |
+| Photo matches between ads, and against 343 ads in 8 neighbouring towers (perceptual hashes) | |
+| The brief, follow-up questions, trusted top 5, contact and consent, accounts and sync (Postgres) | |
 
-Stack: Next.js 15, shadcn/ui, Tailwind. Deployed with Docker on my own server.
+Stack: Next.js 15, shadcn/ui, Tailwind, Vercel AI SDK, OpenRouter, Better Auth, Postgres. Deployed with Docker on my own server (Dokploy).

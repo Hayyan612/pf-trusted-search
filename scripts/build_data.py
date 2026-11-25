@@ -26,7 +26,25 @@ LOW_PRICE = -15             # % below building median per sq ft
 STALE_DAYS = 90
 
 SHORT = re.compile(r"bills included|holiday home|vacation home|serviced|pay monthly|short[- ]?term|per night", re.I)
-LATER = re.compile(r"(?:vacant|available)\s+(?:on|from|in|by)\s+((?:[0-9]{1,2}(?:st|nd|rd|th)?\s+)?(?:January|February|March|April|May|June|July|August|September|October|November|December)(?:\s+20\d\d)?)", re.I)
+LATER = re.compile(r"(?:vacant|available)\s+(?:(?:on|from|in|by)\s+)?((?:[0-9]{1,2}(?:st|nd|rd|th)?\s+)?(?:January|February|March|April|May|June|July|August|September|October|November|December)(?:\s+20\d\d)?)", re.I)
+CONTACT = re.compile(r"(?:contact|call|whatsapp|reach out to|speak to|get in touch with)\s+(?:me,?\s+)?(?:our agent\s+|agent\s+)?([A-Z][a-z]+(?:[ ]+[A-Z][a-z]+)?)")
+NOT_A_PERSON = {"us", "the", "our", "me", "for", "today", "now", "with", "to", "dubai", "property", "princess", "one", "any", "your", "mr", "mrs", "ms"}
+COMPANY = re.compile(r"real|estate|propert|homes|vacation|living|capital|realty|group|brokers?|llc", re.I)
+
+def other_agent_named(desc_raw, agent, broker):
+    """A person named in the ad text as the contact, who is not the agent the listing is under (nicknames allowed)."""
+    a = set((agent or "").lower().replace("-", " ").split())
+    for m in CONTACT.finditer(desc_raw):
+        name = m.group(1)
+        toks = name.lower().split()
+        if toks[0] in NOT_A_PERSON or COMPANY.search(name) or re.match(r"[ ]*(real|estate|propert|homes|vacation|living|capital|realty|group)", desc_raw[m.end():m.end() + 20], re.I): continue
+        if broker and name.lower() in broker.lower(): continue
+        if a & set(toks): continue  # shares a first or last name: same person
+        if any(x.startswith(t) or t.startswith(x) for t in toks for x in a if len(t) >= 3 and len(x) >= 3): continue  # Tolu/Tolulope, Monty/Montgomery
+        if toks[0] in {"mohammed", "mohamed", "muhammad", "mohammad"} and a & {"mohammed", "mohamed", "muhammad", "mohammad"}: continue
+        return name
+    return None
+
 TENANTED = re.compile(r"\btenanted\b|tenant in place|currently (?:rented|leased)|rented until", re.I)
 
 def listing(p, kind):
@@ -49,6 +67,7 @@ def listing(p, kind):
         "descriptionText": shown[:3000],
     }
 
+raw_text = {str(p["id"]): (p.get("description") or "") for k in ("rent", "sale") for p in raw[k]}
 L = {}
 for kind in ("rent", "sale"):
     for p in raw[kind]:
@@ -156,13 +175,32 @@ for x in L.values():
     if x["kind"] == "rent" and SHORT.search(" ".join([x["description"], x["broker"] or "", x["title"] or ""])):
         checks.append({"code": "short_stay", "severity": "ask", "label": "Looks like holiday-home pricing",
                        "detail": "Mentions bills included, serviced or a holiday-home operator. The yearly price may be a monthly-stay rate added up, not a normal Ejari tenancy."})
-    mt = LATER.search(x["description"])
+    mt = LATER.search(f'{x["title"] or ""}. {x["description"]}')
     if TENANTED.search(x["description"]):
         checks.append({"code": "tenanted", "severity": "ask", "label": "Description says it is tenanted", "detail": "Someone may still live there. Ask when it is really free."})
     elif mt:
-        checks.append({"code": "available_later", "severity": "ask", "label": f"Available {mt.group(1)}", "detail": "The ad text gives a later date than the listing suggests. Check it is still free on that date."})
+        when = mt.group(1).strip()
+        past = None
+        try:
+            mon = ["january","february","march","april","may","june","july","august","september","october","november","december"].index(re.search(r"january|february|march|april|may|june|july|august|september|october|november|december", when, re.I).group(0).lower())
+            dm = re.match(r"(\d{1,2})", when)
+            yr = re.search(r"20\d\d", when)
+            year = int(yr.group(0)) if yr else (TODAY.year if mon >= 6 else TODAY.year + (1 if mon < TODAY.month - 1 and x["ageDays"] is not None and x["ageDays"] < 60 else 0))
+            past = datetime(year, mon + 1, int(dm.group(1)) if dm else 28, tzinfo=timezone.utc) < TODAY
+        except (ValueError, AttributeError):
+            past = None
+        if past and re.search(r"20\d\d|\d{1,2}(st|nd|rd|th)?\s", when):
+            checks.append({"code": "available_later", "severity": "ask", "label": f"Ad text out of date (says available {when})", "detail": "That date has passed and the ad was not updated. Ask whether it is still free."})
+        elif past:
+            checks.append({"code": "available_later", "severity": "ask", "label": f"Says available {when}: which year?", "detail": f"{when} has passed this year, so either the ad is out of date or it means next {when}. Ask when it is really free."})
+        else:
+            checks.append({"code": "available_later", "severity": "ask", "label": f"Available {when}", "detail": "The ad gives a later date than the listing suggests. Check it is still free when you need it."})
     if x["ageDays"] is not None and x["ageDays"] > STALE_DAYS:
         checks.append({"code": "stale", "severity": "ask", "label": f"Listed {x['ageDays']} days ago", "detail": "Long-running ads are often already let or sold."})
+    who = other_agent_named(raw_text.get(x["id"], ""), x["agent"], x["broker"])
+    if who:
+        checks.append({"code": "other_agent", "severity": "ask", "label": f"Ad says to contact {who}",
+                       "detail": f"The listing is under {x['agent']}, but the ad text tells you to contact {who}. The ad may have been copied from another agent. Ask who actually handles this flat."})
     if x["verified"]:
         checks.append({"code": "verified", "severity": "ok", "label": "Verified badge on Property Finder", "detail": "Passed Property Finder's listing checks when it was posted. That does not confirm it is still available today."})
     sev = "hide" if any(c["severity"] == "hide" for c in checks) else "ask" if any(c["severity"] == "ask" for c in checks) else "ok"

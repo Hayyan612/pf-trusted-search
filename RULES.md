@@ -28,6 +28,8 @@ When it is not sure, it asks the agent instead of deciding. A wrong "Ask first" 
 - The agent typed the wrong size. McCone (1,189 sq ft) and Seafront (1,305 sq ft) use the same living-room photo. Our rule only saw one shared photo and said "Ask first", but a person can see it is one flat with two sizes. *Hurts the searcher* if the size is wrong. The rule should also flag "same photos, different size" as a question.
 - An agency reuses photos of an identical unit on another floor because the tenant will not allow photos. Honest, but the photos are still not this flat. *Hurts an honest agent* if hidden, so the reason shown says "photos may not show this flat", not "fake".
 
+**Photos from another building.** We also compared every ad's photos with 343 ads from 8 neighbouring Marina towers and found no match, so there is no separate rule for it yet. *Where a rule like that would be wrong:* towers by the same developer share lobby, gym and pool photos, and a view from one tower looks like the view from the next. *Who gets hurt:* honest agents using the developer's amenity photos.
+
 ## 3. Price far below what this size actually rented or sold for: ask first
 
 **Rule.** Compare the ad with the last registered rents or sales for the same size in this tower (DLD records, shown on Property Finder through DataGuru). 15%+ below the median: ask the agent why. 15%+ above: shown as information, not a warning ("room to negotiate"). If there are no registered deals, fall back to the median of today's live ads per sq ft.
@@ -66,6 +68,25 @@ When it is not sure, it asks the agent instead of deciding. A wrong "Ask first" 
 **Rule.** Show the badge, but never treat it as "available now". All 6 ads TrueUnit marks likely misleading carry the Verified badge, because the badge checks the ad when it is posted.
 
 **Where it is wrong.** Not wrong as a rule, but it can feel unfair to agents who paid for verification. The answer: confirmed answers from TrueUnit should feed their ranking (see ONE-PAGER.md).
+
+## 9. The ad names a different person to contact: ask first
+
+**Rule.** If the ad text tells you to contact a person who is not the agent the listing is under (nicknames and the agency's own name excluded), ask who actually handles the flat. 5 of 242 ads do this.
+
+**Where it is wrong.**
+- Teams: one agent lists, a colleague does viewings. Normal in big agencies. *Hurts an honest agent* a little: one extra question.
+- Agents re-use their own old ad text after a colleague leaves. Sloppy, not misleading. *Hurts an honest agent.*
+- Our name matching can miss: "Tolu" is short for "Tolulope". Our first version flagged it (see AI-LOG.md). Nicknames that do not share letters ("Bob" for "Robert") would still be flagged.
+
+## 10. What makes the trusted shortlist
+
+**Rule.** Scout's top 5 are flats that (a) fit the person's brief: rent or buy, budget, bedrooms, furnishing; (b) are not marked likely misleading; (c) rank highest on TrueUnit's checks first, then how much of the brief they meet, then price against registered deals, then how fresh the ad is. Must-haves the ad does not mention (pets, parking) do **not** remove a flat: they become questions to the agent. A flat is only **confirmed** on the shortlist when the agent has answered: still available, at this price, on these terms. It drops off when the agent says it is gone, or when the answer breaks the brief (a higher price, a later date).
+
+**Where it is wrong.**
+- Ads leave things out. A flat that allows pets but does not say so ranks below one that says it, so the top 5 favour agents who write fuller ads, not better flats. *Hurts an honest agent* with a short ad. Asking the agent closes the gap, but only for flats that made the top 5.
+- "Looks genuine" ranks above "Ask first", so a real bargain with one open question (for example a flat also listed for sale) can sit below an average flat with none. *Hurts the searcher*, who may miss the best deal. That is why the next 10 that fit are one tap away.
+- A confirmed answer is only as good as the agent. An agent can say "available" and then push another unit at the viewing. *Hurts the searcher.* The fix is to check whether answers held at the viewing and feed that into the agent's ranking (ONE-PAGER.md, "What I could not build").
+- The brief can be wrong: people often say "under 130k" and would happily pay 135k for the right flat. *Hurts the searcher.* The brief is shown as tags that can be edited in one tap, and the chat can relax it ("raise my budget by 10%").
 
 ## When TrueUnit is not sure
 
