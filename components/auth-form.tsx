@@ -36,7 +36,7 @@ export function AuthForm({ mode, googleEnabled }: { mode: "login" | "signup"; go
       toast.error(res.error.message || "That did not work. Check your details and try again.");
       return;
     }
-    toast.success(mode === "signup" ? "Account created. Your shortlist now follows you." : "Welcome back");
+    toast.success(mode === "signup" ? "Account created. Check your inbox to confirm your email." : "Welcome back");
     router.push(next);
     router.refresh();
   };
@@ -75,7 +75,11 @@ export function AuthForm({ mode, googleEnabled }: { mode: "login" | "signup"; go
         <div className="space-y-1.5">
           <Label htmlFor="password">Password</Label>
           <Input id="password" type="password" required minLength={8} autoComplete={mode === "signup" ? "new-password" : "current-password"} value={form.password} onChange={set("password")} />
-          {mode === "signup" && <p className="text-[12px] text-muted-foreground">At least 8 characters.</p>}
+          {mode === "signup" ? (
+            <p className="text-[12px] text-muted-foreground">At least 8 characters.</p>
+          ) : (
+            <Link href="/forgot-password" className="text-[12px] text-primary underline">Forgot password?</Link>
+          )}
         </div>
         <Button type="submit" className="w-full" disabled={busy}>
           {busy ? "Please wait…" : mode === "signup" ? "Create account" : "Log in"}
