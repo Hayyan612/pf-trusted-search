@@ -10,6 +10,7 @@ export interface ShortlistItem {
   note?: string;
   reply?: AgentReply;
   viewing?: { slot: string; status: "requested" | "confirmed"; at: number };
+  contact?: { name: string; channel: string }; // what was shared with the agent (the number itself stays in this browser)
 }
 
 export interface AgentReply {

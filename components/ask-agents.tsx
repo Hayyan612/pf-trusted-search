@@ -10,22 +10,29 @@ import { AgentAvatar } from "@/components/agent-avatar";
 import { getListing, priceLine } from "@/lib/data";
 import { questionsFor } from "@/lib/questions";
 import { useShortlist } from "@/lib/shortlist";
+import { ContactConsent } from "@/components/contact-consent";
+import { CHANNEL_LABEL, contactProblem, useContact } from "@/lib/contact";
 
 /** One confirm step for several agents at once. Nothing is sent until the person taps Send. */
 export function AskAgents({ items, label }: { items: { id: string; toAsk: string[] }[]; label?: string }) {
   const router = useRouter();
   const { add, items: saved } = useShortlist();
   const [open, setOpen] = useState(false);
+  const [consent, setConsent] = useState(false);
+  const contact = useContact();
+  const problem = contactProblem(contact) ?? (consent ? null : "Tick the box to share your details with these agents.");
   const rows = items.map((it) => ({ l: getListing(it.id)!, qs: questionsFor(getListing(it.id)!, it.toAsk) })).filter((r) => r.l);
   const already = new Set(saved.map((s) => s.id));
   const fresh = rows.filter((r) => !already.has(r.l.id));
 
   const send = () => {
     const now = Date.now();
-    fresh.forEach((r, i) => add({ id: r.l.id, requestedAt: now + i, questions: r.qs.map((q) => q.text) }));
+    if (problem) return;
+    const who = { name: contact.name.trim(), channel: CHANNEL_LABEL[contact.channel] };
+    fresh.forEach((r, i) => add({ id: r.l.id, requestedAt: now + i, questions: r.qs.map((q) => q.text), contact: who }));
     setOpen(false);
     toast.success(`Sent to ${fresh.length} ${fresh.length === 1 ? "agent" : "agents"}`, { description: "Answers will appear in your shortlist." });
-    router.push("/shortlist");
+    router.push("/shortlist?sent=1");
   };
 
   return (
@@ -57,9 +64,11 @@ export function AskAgents({ items, label }: { items: { id: string; toAsk: string
               </ul>
             </div>
           ))}
+          <ContactConsent agents={fresh.length} consent={consent} onConsent={setConsent} />
         </div>
         <DrawerFooter>
-          <Button onClick={send} disabled={!fresh.length}><Send /> Send to {fresh.length} {fresh.length === 1 ? "agent" : "agents"}</Button>
+          {problem && <p className="text-center text-[12px] text-amber-700">{problem}</p>}
+          <Button onClick={send} disabled={!fresh.length || Boolean(problem)}><Send /> Send to {fresh.length} {fresh.length === 1 ? "agent" : "agents"}</Button>
           <p className="text-center text-[12px] text-muted-foreground">Prototype: agents&apos; replies are simulated.</p>
         </DrawerFooter>
       </DrawerContent>

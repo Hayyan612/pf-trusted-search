@@ -9,6 +9,8 @@ import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, D
 import { Textarea } from "@/components/ui/textarea";
 import { questionsFor } from "@/lib/questions";
 import { useShortlist } from "@/lib/shortlist";
+import { ContactConsent } from "@/components/contact-consent";
+import { CHANNEL_LABEL, contactProblem, useContact } from "@/lib/contact";
 import type { Listing } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
@@ -18,12 +20,16 @@ export function ConfirmBar({ listing, inline = false }: { listing: Listing; inli
   const [qs, setQs] = useState(() => questionsFor(listing));
   const [note, setNote] = useState("");
   const [open, setOpen] = useState(false);
+  const [consent, setConsent] = useState(false);
+  const contact = useContact();
+  const problem = contactProblem(contact) ?? (consent ? null : "Tick the box to share your details with this agent.");
 
   const send = () => {
-    add({ id: listing.id, requestedAt: Date.now(), questions: qs.filter((q) => q.on).map((q) => q.text), note: note || undefined });
+    if (problem) return;
+    add({ id: listing.id, requestedAt: Date.now(), questions: qs.filter((q) => q.on).map((q) => q.text), note: note || undefined, contact: { name: contact.name.trim(), channel: CHANNEL_LABEL[contact.channel] } });
     setOpen(false);
     toast.success(`Sent to ${listing.agent}`, { description: "Scout will bring the answers to your shortlist." });
-    router.push("/shortlist");
+    router.push("/shortlist?sent=1");
   };
 
   return (
@@ -65,10 +71,12 @@ export function ConfirmBar({ listing, inline = false }: { listing: Listing; inli
                 </span>
               </button>
             ))}
+            <ContactConsent agents={1} consent={consent} onConsent={setConsent} />
             <Textarea id="note" placeholder="Anything else? e.g. I have a cat, I need parking" value={note} onChange={(e) => setNote(e.target.value)} />
           </div>
           <DrawerFooter>
-            <Button onClick={send} disabled={!qs.some((q) => q.on)}>
+            {problem && <p className="text-center text-[12px] text-amber-700">{problem}</p>}
+            <Button onClick={send} disabled={!qs.some((q) => q.on) || Boolean(problem)}>
               Send {qs.filter((q) => q.on).length} questions
             </Button>
             <p className="text-center text-[12px] text-muted-foreground">Prototype: the agent&apos;s reply is simulated.</p>
