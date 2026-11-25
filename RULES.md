@@ -8,6 +8,8 @@ Three outcomes:
 - **Ask first**: shown, with the reason, and the question is added to "Confirm before I call".
 - **Likely misleading**: moved to a collapsed "hidden" section at the bottom, with the reason. One tap to see it. Never deleted.
 
+It works from a snapshot (captured 25 Nov 2026), and ads come down within hours: in a hand check that evening, one of 32 sampled ads was already gone (AI-LOG.md #10). A real version must check an ad is still live before showing it or contacting its agent.
+
 When it is not sure, it asks the agent instead of deciding. A wrong "Ask first" costs one question. A wrong "Likely misleading" can cost an honest agent a lead, so that bar is high.
 
 ## 1. Same flat, many ads: show it once

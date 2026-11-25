@@ -73,3 +73,11 @@ I built this with Claude (Claude Code) as my main tool. These are moments where 
 **How I caught it.** Before writing it up, I opened the 6 side by side. They are 3 pairs, each from one agency. Two pairs are one ad for rent and one for sale, with sizes 4 and 59 sq ft apart: most likely the same flat offered both ways, sizes typed differently. Only one pair, two sale ads at AED 2.0M and 2.7M, looks like two different flats.
 
 **What changed.** The one-pager now says what the data supports, not "6 fake ads". RULES.md (rule 2) records the overcall, who it hurts (the honest agents whose ads were hidden) and the fix: same agency, one rent and one sale, means "Ask first", not "misleading". I left the code as is for the submission and wrote the fix down rather than change the audit numbers at the last minute.
+
+## 10. TrueUnit showed an ad that had already been taken down
+
+**What it said.** TrueUnit listed McCone Properties' 2-bed at AED 115,990 (#175116789) as "Ask first" (one shared photo, and the ad text names a different contact), as if the ad were still live.
+
+**How I caught it.** Checking 32 ads by hand on the evening of 25 Nov, the link opened Property Finder's "no longer available" page. I had captured it that morning. The ad it shared a photo with, Seafront's 2-bed at AED 115,000, is still live.
+
+**What changed.** Nothing in the code before the deadline. The lesson is that the data is a snapshot and ads disappear within hours, so a real version must check an ad is still live before showing it as an option and before sending any question to its agent. That is now written in RULES.md ("When it is not sure") and in the hand-check notes in AUDIT.md. It also supports the idea itself: a flat that is gone is the first thing the person needs to know.
