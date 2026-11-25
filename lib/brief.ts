@@ -71,7 +71,7 @@ export function parseBriefRules(text: string, today = new Date("2026-11-25")): B
   else if (/\b(just me|alone|myself|single)\b/.test(t)) b.household = "single";
   if (/mortgage|loan|finance/.test(t)) b.financing = "mortgage";
   else if (/\bcash\b/.test(t)) b.financing = "cash";
-  if (/invest|rental income|yield|rent it out|roi/.test(t)) b.use = "invest";
+  if (/invest|rental income|yield|rent (it )?out|let (it )?out|roi\b/.test(t)) b.use = "invest";
   else if (/live in|to live|for us|for my family|end[- ]user/.test(t) && b.purpose === "buy") b.use = "live";
   const ch = t.match(/(\d{1,2})\s*cheques?/);
   if (ch) b.maxCheques = Number(ch[1]);

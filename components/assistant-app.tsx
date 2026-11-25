@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Loader2, Pencil, Sparkles } from "lucide-react";
+import { CalendarCheck, Handshake, Loader2, MessageSquareText, Pencil, ShieldCheck, Sparkles } from "lucide-react";
+import { useShortlist } from "@/lib/shortlist";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -67,6 +68,11 @@ function Onboarding({ onDone }: { onDone: (b: Brief) => void }) {
         <CardDescription>Say it the way you would to a friend. Scout turns it into a brief you can check, then finds the flats in Princess Tower worth your time.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
+        <ul className="grid gap-2 rounded-xl bg-muted/50 p-3 text-[13px] sm:grid-cols-3">
+          <li className="flex gap-2"><ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" /> I check every ad and hide the misleading ones, with reasons.</li>
+          <li className="flex gap-2"><MessageSquareText className="mt-0.5 size-4 shrink-0 text-primary" /> I ask agents for you, only when you say so.</li>
+          <li className="flex gap-2"><Handshake className="mt-0.5 size-4 shrink-0 text-primary" /> You decide. Viewings and the deal stay with the agent.</li>
+        </ul>
         <Textarea
           id="brief-text"
           rows={4}
@@ -125,6 +131,30 @@ function BriefSummary({ brief, onEdit }: { brief: Brief; onEdit: () => void }) {
   );
 }
 
+function WelcomeBack() {
+  const { items } = useShortlist();
+  const { data } = useSession();
+  if (!items.length) return null;
+  const answered = items.filter((i) => i.reply).length;
+  const waiting = items.length - answered;
+  const viewings = items.filter((i) => i.viewing?.status === "confirmed").length;
+  const first = data?.user.name?.split(" ")[0];
+  return (
+    <Card className="gap-2 border-emerald-200 bg-emerald-50/60 py-4 shadow-none motion-safe:animate-in motion-safe:fade-in">
+      <CardContent className="flex flex-wrap items-center justify-between gap-3 px-4">
+        <div className="text-[14px]">
+          <div className="font-semibold">Welcome back{first ? `, ${first}` : ""}.</div>
+          <div className="text-muted-foreground">
+            {answered} of {items.length} agents answered{waiting ? `, ${waiting} still waiting` : ""}
+            {viewings ? `, ${viewings} ${viewings === 1 ? "viewing" : "viewings"} confirmed` : ""}.
+          </div>
+        </div>
+        <Button asChild size="sm"><Link href="/shortlist"><CalendarCheck /> Open shortlist</Link></Button>
+      </CardContent>
+    </Card>
+  );
+}
+
 export function AssistantApp({ chatEnabled }: { chatEnabled: boolean }) {
   const brief = useBrief();
   const [editing, setEditing] = useState(false);
@@ -143,6 +173,7 @@ export function AssistantApp({ chatEnabled }: { chatEnabled: boolean }) {
         <button type="button" className="text-[12px] text-muted-foreground underline" onClick={() => saveBrief(null)}>Start over</button>
       </div>
       <div className="min-w-0 space-y-5">
+        <WelcomeBack />
         <TopFive brief={brief} />
         <ScoutChat brief={brief} enabled={chatEnabled} />
       </div>

@@ -2,7 +2,7 @@
 import { Card } from "@/components/ui/card";
 
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Clock, CheckCircle2, AlertCircle, XCircle, Smartphone, Sparkles, CalendarClock, CalendarCheck } from "lucide-react";
 import { FadeImage } from "@/components/fade-image";
 import { cn } from "@/lib/utils";
@@ -19,6 +19,8 @@ export default function ShortlistPage() {
   const authEnabled = process.env.NEXT_PUBLIC_AUTH_ENABLED !== "false";
   const { items, update, remove, clear } = useShortlist();
   const { data: session } = useSession();
+  const [justSent, setJustSent] = useState(false);
+  useEffect(() => setJustSent(new URLSearchParams(window.location.search).get("sent") === "1"), []);
 
   const rank = (i: (typeof items)[number]) => (!i.reply ? 2 : i.reply.outcome === "confirmed" ? 0 : i.reply.outcome === "changed" ? 1 : 3);
   const sorted = [...items].sort((a, b) => rank(a) - rank(b));
@@ -55,6 +57,18 @@ export default function ShortlistPage() {
         </Card>
       )}
 
+      {justSent && authEnabled && !session && items.length > 0 && (
+        <Card className="gap-2 border-primary/25 bg-accent p-4 shadow-none motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-2">
+          <div className="text-[15px] font-semibold">Get the answers on your phone</div>
+          <p className="text-[13px]">Agents usually reply within the hour. Create an account and your brief, shortlist and answers follow you to the Property Finder app.</p>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild size="sm"><Link href="/signup?next=/shortlist">Create account</Link></Button>
+            <Button asChild size="sm" variant="outline"><Link href="/login?next=/shortlist">Log in or continue with Google</Link></Button>
+            <Button size="sm" variant="ghost" onClick={() => setJustSent(false)}>Not now</Button>
+          </div>
+        </Card>
+      )}
+
       {items.length > 0 && (
         <div className="flex flex-wrap gap-2 text-[12px]">
           {([["Confirmed", items.filter((i) => i.reply?.outcome === "confirmed").length, "bg-emerald-50 text-emerald-800"],
@@ -87,6 +101,9 @@ export default function ShortlistPage() {
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Clock className="size-4 animate-pulse" /> Waiting for {l.agent} ({it.questions.length} questions sent)
                 </div>
+              )}
+              {it.contact && (
+                <div className="mb-1 text-[12px] text-muted-foreground">Shared with {l.agent}: {it.contact.name}, replies by {it.contact.channel}</div>
               )}
               {r && (
                 <div className="space-y-2 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-1 motion-safe:duration-500">
