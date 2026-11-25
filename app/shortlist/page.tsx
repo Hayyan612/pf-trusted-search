@@ -12,6 +12,7 @@ import { useSession } from "@/lib/auth-client";
 const SIMULATED_DELAY_MS = 6000;
 
 export default function ShortlistPage() {
+  const authEnabled = process.env.NEXT_PUBLIC_AUTH_ENABLED !== "false";
   const { items, update, remove, clear } = useShortlist();
   const { data: session } = useSession();
 
@@ -99,6 +100,8 @@ export default function ShortlistPage() {
             Saved to <b>{session.user.email}</b>. Log in on another device and your shortlist and the agents&apos; answers are there. In the
             real product the Property Finder app would also send a notification when an agent answers.
           </p>
+        ) : !authEnabled ? (
+          <p className="text-[13px]">Saved in this browser. With an account, the shortlist and the agents&apos; answers follow you from laptop to phone.</p>
         ) : (
           <div className="space-y-2">
             <p className="text-[13px]">This shortlist is only on this device. Log in to keep it and pick it up on your phone or laptop.</p>

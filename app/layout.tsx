@@ -18,6 +18,9 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#ffffff" };
 
+// Build-time switch: the Vercel mirror sets NEXT_PUBLIC_AUTH_ENABLED=false (no database there).
+const AUTH_ENABLED = process.env.NEXT_PUBLIC_AUTH_ENABLED !== "false";
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.variable}>
@@ -35,14 +38,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </Suspense>
             <div className="flex items-center gap-2">
               <span className="hidden rounded-full border px-2 py-0.5 text-[11px] font-medium text-muted-foreground lg:inline">Prototype</span>
-              <UserMenu />
+              {AUTH_ENABLED && <UserMenu />}
             </div>
           </div>
         </header>
         <main className="min-h-[calc(100dvh-4rem)] pb-24 md:pb-12">{children}</main>
         <BottomNav />
         <Toaster position="top-center" />
-        <ShortlistSync />
+        {AUTH_ENABLED && <ShortlistSync />}
       </body>
     </html>
   );
