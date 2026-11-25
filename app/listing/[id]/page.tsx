@@ -17,6 +17,7 @@ import { PriceTrend } from "@/components/price-trend";
 import { ListingDescription } from "@/components/listing-description";
 import { UpfrontCosts, Glossary } from "@/components/expat-guide";
 import { LocationCard } from "@/components/location-card";
+import { ListingScout } from "@/components/listing-scout";
 import { negotiation } from "@/lib/negotiate";
 import { HandCoins } from "lucide-react";
 import { getListing, getUnit, aed, listedAgo, trendFor, BUILDING_DETAILS, type Severity } from "@/lib/data";
@@ -195,6 +196,8 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
             </CardHeader>
             <CardContent><ListingDescription text={l.descriptionText || l.description} /></CardContent>
           </Card>
+
+          <ListingScout listing={l} />
 
           <LocationCard />
 

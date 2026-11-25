@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Sparkles, Phone, Check } from "lucide-react";
 import { toast } from "sonner";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Textarea } from "@/components/ui/textarea";
 import { questionsFor } from "@/lib/questions";
+import { useExtraQuestions } from "@/lib/extra-questions";
 import { useShortlist } from "@/lib/shortlist";
 import { ContactConsent } from "@/components/contact-consent";
 import { CHANNEL_LABEL, contactProblem, useContact } from "@/lib/contact";
@@ -17,9 +18,15 @@ import { cn } from "@/lib/utils";
 export function ConfirmBar({ listing, inline = false }: { listing: Listing; inline?: boolean }) {
   const router = useRouter();
   const { add } = useShortlist();
+  const extras = useExtraQuestions(listing.id);
   const [qs, setQs] = useState(() => questionsFor(listing));
   const [note, setNote] = useState("");
   const [open, setOpen] = useState(false);
+  // Questions added from "Ask Scout about this flat" join the list when the drawer opens.
+  useEffect(() => {
+    if (open) setQs(questionsFor(listing, extras));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
   const [consent, setConsent] = useState(false);
   const contact = useContact();
   const problem = contactProblem(contact) ?? (consent ? null : "Tick the box to share your details with this agent.");

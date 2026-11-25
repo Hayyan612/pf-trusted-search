@@ -32,7 +32,7 @@ export function questionsFor(l: Listing, fromBrief: string[] = []): { id: string
   }
   const already = (t: string) => base.some((q) => /chiller/i.test(q.text) && /chiller/i.test(t));
   fromBrief.forEach((text, i) => {
-    if (!already(text)) extra.push({ id: `brief-${i}`, text, why: "From your brief", on: true });
+    if (!already(text)) extra.push({ id: `brief-${i}`, text, why: "You asked", on: true });
   });
   const seen = new Set<string>();
   return [...base, ...extra].filter((q) => (seen.has(q.id) ? false : (seen.add(q.id), true)));
