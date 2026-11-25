@@ -61,6 +61,8 @@ When it is not sure, it asks the agent instead of deciding. A wrong "Ask first" 
 
 **Where it is wrong.** "Tenanted" can be an investor sale where the tenant is the point. For buyers it is information, not a warning. *Hurts an honest agent* when the searcher reads it as a red flag. The wording says what the ad says, not that the ad is wrong.
 
+It also reads dates too loosely. Checked by hand: Aaronz's 1-bed (AED 87,000) says "Available from 31 Oct 2026" and "Available on November 1, 2026", listed 4 Nov, checked 25 Nov. TrueUnit matched only the month and said "a later date than the listing suggests". The truth is the opposite: the date has passed and was never updated. Asking was still right, but the reason shown was wrong, which *hurts the searcher* (they ask the wrong question) and makes TrueUnit look careless. **Fix (not yet built):** read the full date, including the day and the structured "Available from" field, and say "this date has passed; ask if it is still free" when it is in the past.
+
 ## 7. Ad older than 90 days: ask first
 
 **Rule.** Ads live more than 90 days are often already let or sold, so ask.
