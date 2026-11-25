@@ -16,9 +16,31 @@ import "./globals.css";
 const sans = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-sans" });
 const display = Instrument_Serif({ subsets: ["latin"], weight: "400", style: ["normal", "italic"], variable: "--font-display" });
 
+const SITE = "https://trueunit.hayyan.space";
+const DESCRIPTION =
+  "A personal assistant for renting or buying in Dubai. It checks every ad, sets aside the misleading ones, and asks the agents for you before you call.";
+
 export const metadata: Metadata = {
-  title: "TrueUnit by Scout",
-  description: "Prototype: a search assistant that shows the real flats behind the ads in Princess Tower, Dubai Marina.",
+  metadataBase: new URL(SITE),
+  title: { default: "TrueUnit: the real flats, not the ads", template: "%s · TrueUnit" },
+  description: DESCRIPTION,
+  applicationName: "TrueUnit",
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    url: SITE,
+    siteName: "TrueUnit",
+    title: "TrueUnit: the real flats, not the ads",
+    description: DESCRIPTION,
+    locale: "en_AE",
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "TrueUnit: the real flats, not the ads. 242 ads checked in Princess Tower, Dubai Marina." }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "TrueUnit: the real flats, not the ads",
+    description: DESCRIPTION,
+    images: ["/og.png"],
+  },
 };
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#ffffff" };
