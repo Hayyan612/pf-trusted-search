@@ -29,21 +29,24 @@ export function LocationCard({ priorities = [], workplace = null, maxCommuteMin 
   const [places, setPlaces] = useState<Place[]>([]);
   const [source, setSource] = useState<string>("");
   const [loaded, setLoaded] = useState<string[]>([]);
+  const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [mapReady, setMapReady] = useState(false);
   const kinds = useMemo(() => [...new Set([...priorities, ...DEFAULT_KINDS])], [priorities]);
   const nearest = useMemo(() => kinds.map((k) => places.find((p) => p.kind === k)).filter(Boolean) as Place[], [kinds, places]);
   const commute = workplace ? commuteEstimate(workplace) : null;
 
   useEffect(() => {
     let alive = true;
-    fetch("/api/nearby")
-      .then((r) => r.json())
+    fetch("/api/nearby", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
       .then((j) => {
         if (!alive) return;
         setPlaces(j.places ?? []);
         setSource(j.source);
         setLoaded(j.loaded ?? []);
+        setStatus("ready");
       })
-      .catch(() => {});
+      .catch(() => alive && setStatus("error"));
     return () => {
       alive = false;
     };
@@ -56,6 +59,7 @@ export function LocationCard({ priorities = [], workplace = null, maxCommuteMin 
     import("maplibre-gl").then(({ default: maplibregl }) => {
       if (cancelled || !box.current) return;
       map = new maplibregl.Map({ container: box.current, style: STYLE, center: [TOWER.lon, TOWER.lat], zoom: 14.2, attributionControl: { compact: true } });
+      map.once("load", () => !cancelled && setMapReady(true));
       map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
       new maplibregl.Marker({ element: dot("#2f2a7a", 18) }).setLngLat([TOWER.lon, TOWER.lat]).setPopup(new maplibregl.Popup({ offset: 12 }).setText("Princess Tower")).addTo(map);
       if (workplace) {
@@ -88,7 +92,14 @@ export function LocationCard({ priorities = [], workplace = null, maxCommuteMin 
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div ref={box} className="h-64 w-full overflow-hidden rounded-xl border bg-muted sm:h-72" role="img" aria-label="Map of Princess Tower and nearby places" />
+        <div className="relative">
+          <div ref={box} className="h-64 w-full overflow-hidden rounded-xl border bg-muted sm:h-72" role="img" aria-label="Map of Princess Tower and nearby places" />
+          {!mapReady && (
+            <div className="shimmer pointer-events-none absolute inset-0 grid place-items-center rounded-xl text-[13px] text-muted-foreground">
+              <span className="relative z-10 flex items-center gap-2"><MapPin className="size-4 animate-bounce motion-reduce:animate-none" /> Loading the map…</span>
+            </div>
+          )}
+        </div>
 
         {commute && workplace && (
           <div className={cn("space-y-2 rounded-xl border p-3", over ? "border-amber-200 bg-amber-50/60" : "bg-muted/30")}>
@@ -104,7 +115,19 @@ export function LocationCard({ priorities = [], workplace = null, maxCommuteMin 
           </div>
         )}
 
-        <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        {status === "loading" && (
+          <div className="space-y-2" aria-live="polite">
+            <p className="text-[13px] text-muted-foreground">Finding places near Princess Tower…</p>
+            <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {kinds.map((k) => <li key={k} className="shimmer h-10 rounded-lg" />)}
+            </ul>
+          </div>
+        )}
+        {status === "error" && (
+          <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[13px] text-amber-800">Could not load nearby places right now. The map still shows the area.</p>
+        )}
+        {status === "ready" && (
+        <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 motion-safe:animate-in motion-safe:fade-in">
           {kinds.map((k) => {
             const p = places.find((x) => x.kind === k);
             const wanted = priorities.includes(k);
@@ -121,6 +144,7 @@ export function LocationCard({ priorities = [], workplace = null, maxCommuteMin 
             );
           })}
         </ul>
+        )}
       </CardContent>
     </Card>
   );

@@ -99,7 +99,7 @@ export function ScoutThread({ brief, onEdit }: { brief: Brief; onEdit: () => voi
     body: (
       <div className="space-y-2">
         <p>
-          I read your brief: <b>{brief.purpose === "rent" ? "to rent" : "to buy"}</b>, {bedsLabel(brief.beds).toLowerCase()}, {budgetLabel(brief).toLowerCase()}, moving {moveInLabel(brief.moveIn).toLowerCase()}.
+          I read your brief: <b>{brief.purpose === "rent" ? "to rent" : "to buy"}</b>, {bedsLabel(brief.beds)}, {budgetLabel(brief).replace(/^Up to/, "up to").replace(/^Any budget/, "any budget")}, {brief.moveIn && brief.moveIn !== "flexible" ? `moving in ${moveInLabel(brief.moveIn)}` : "flexible on dates"}.
           Of <b>{m.counts.flats}</b> real flats in Princess Tower, <b>{m.counts.fit}</b> fit and <b>{m.counts.trusted}</b> look genuine. I would start with these {Math.min(5, m.top.length)}.
         </p>
         <ol className="space-y-1">

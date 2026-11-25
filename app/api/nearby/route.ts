@@ -34,5 +34,5 @@ export async function GET() {
       ? { at: Date.now(), places: fresh, source: "live", loaded: NEARBY_KEYS }
       : { at: Date.now(), places: toPlaces(snapshot as never), source: "snapshot", loaded: snap.kinds ?? [] };
   }
-  return NextResponse.json({ places: cache.places, source: cache.source, loaded: cache.loaded }, { headers: { "Cache-Control": "public, max-age=600" } });
+  return NextResponse.json({ places: cache.places, source: cache.source, loaded: cache.loaded }, { headers: { "Cache-Control": "no-store" } });
 }
