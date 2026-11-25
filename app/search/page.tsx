@@ -30,7 +30,7 @@ export default async function SearchPage({ searchParams }: { searchParams: SP })
   const ads = listingsFor(kind, beds);
 
   return (
-    <div className="mx-auto max-w-7xl pt-3 md:grid md:grid-cols-[320px_1fr] md:gap-8 md:px-8 md:pt-8">
+    <div className="mx-auto max-w-7xl pt-3 md:grid md:grid-cols-[300px_1fr] lg:grid-cols-[320px_minmax(0,820px)] lg:justify-center md:gap-8 md:px-8 md:pt-8">
       <aside className="space-y-4 md:sticky md:top-24 md:self-start">
       <div className="space-y-2 px-4 md:px-0">
         <div className="text-[13px] text-muted-foreground">{BUILDING}</div>
@@ -69,20 +69,20 @@ export default async function SearchPage({ searchParams }: { searchParams: SP })
       <p className="hidden px-1 text-[12px] text-muted-foreground md:block">Real ads captured from propertyfinder.ae. Checks explained in <Link href="/how" className="underline">How it decides</Link>.</p>
       </aside>
 
-      <div className="mt-4 grid gap-3 px-4 sm:grid-cols-2 md:mt-0 md:px-0 xl:grid-cols-3">
+      <div className="mt-4 grid gap-4 px-4 md:mt-0 md:px-0">
         {view === "flats" ? (
           <>
             {visible.map(({ listing, unit }, i) => (
               <ListingCard key={unit.id} listing={listing} unit={unit} showUnit index={i} />
             ))}
             {hidden.length > 0 && (
-              <details className="group rounded-2xl border p-3 sm:col-span-2 xl:col-span-3">
+              <details className="group rounded-2xl border p-3">
                 <summary className="flex cursor-pointer list-none items-center justify-between text-[14px] font-medium">
                   {hidden.length} hidden as likely misleading
                   <ChevronDown className="size-4 transition-transform duration-200 group-open:rotate-180" />
                 </summary>
                 <p className="mt-2 text-[13px] text-muted-foreground">Hidden, not deleted. Open one to see why. You can still contact the agent.</p>
-                <div className="mt-3 grid gap-3 motion-safe:animate-in motion-safe:fade-in sm:grid-cols-2 xl:grid-cols-3">
+                <div className="mt-3 grid gap-4 motion-safe:animate-in motion-safe:fade-in">
                   {hidden.map(({ listing, unit }) => (
                     <ListingCard key={unit.id} listing={listing} unit={unit} showUnit />
                   ))}

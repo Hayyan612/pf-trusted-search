@@ -27,17 +27,17 @@ export function ConfirmBar({ listing, inline = false }: { listing: Listing; inli
   };
 
   return (
-    <div className={inline ? "hidden gap-2 md:flex md:flex-col-reverse" : "fixed inset-x-0 bottom-[57px] z-20 flex gap-2 border-t bg-white px-4 py-3 md:hidden"}>
+    <div className={inline ? "hidden gap-2 md:grid md:grid-cols-2" : "fixed inset-x-0 bottom-[57px] z-20 flex gap-2 border-t bg-white px-4 py-3 md:hidden"}>
       <Button
         variant="outline"
-        className={inline ? "w-full" : "flex-1"}
+        className={inline ? "order-2 col-span-2 w-full border-white/40 bg-white text-primary hover:bg-white/90" : "flex-1"}
         onClick={() => toast("You can always call the agent directly", { description: `${listing.agent}, ${listing.broker}. In the real app this opens the call or WhatsApp.` })}
       >
         <Phone className="size-4" /> Call agent
       </Button>
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>
-          <Button className={inline ? "w-full" : "flex-[1.4]"} size={inline ? "lg" : "default"}>
+          <Button className={inline ? "order-1 col-span-2 w-full bg-[var(--brand)] text-white hover:bg-[var(--brand)]/90" : "flex-[1.4]"} size={inline ? "lg" : "default"}>
             <Sparkles className="size-4" /> Confirm before I call
           </Button>
         </DrawerTrigger>

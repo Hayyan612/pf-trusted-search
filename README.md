@@ -20,7 +20,7 @@ Everything works without an account. Signing up (email and password, or Google) 
 ## Docs
 
 - [ONE-PAGER.md](ONE-PAGER.md): the problem, where it lives, metrics, the test, what is missing
-- [AUDIT.md](AUDIT.md): all 242 ads checked, 87 listed one by one with links
+- [AUDIT.md](AUDIT.md): all 242 ads checked, 94 listed one by one with links
 - [RULES.md](RULES.md): the rules and where each one is wrong
 - [AI-LOG.md](AI-LOG.md): five times the AI was confidently wrong, and how it was caught
 - [DECISIONS.md](DECISIONS.md): decisions with times, and the research behind them

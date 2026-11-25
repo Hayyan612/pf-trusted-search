@@ -37,6 +37,12 @@ export interface Listing {
   checks: Check[];
   status: Severity;
   unitId: string;
+  agentImage: string | null;
+  agentSuper: boolean;
+  agentLanguages: string[];
+  brokerLogo: string | null;
+  reference: string | null;
+  amenities: string[];
 }
 
 export interface Unit {
@@ -104,6 +110,15 @@ export function summary(kind: Kind, beds?: number) {
     ask: units.filter((u) => u.listing.status === "ask").length,
     clear: units.filter((u) => u.listing.status === "ok").length,
   };
+}
+
+export function listedAgo(days: number | null) {
+  if (days === null) return "";
+  if (days <= 0) return "today";
+  if (days === 1) return "yesterday";
+  if (days < 30) return `${days} days ago`;
+  const m = Math.round(days / 30);
+  return m === 1 ? "1 month ago" : `${m} months ago`;
 }
 
 export function aed(n: number) {

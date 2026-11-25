@@ -14,6 +14,8 @@ import imagehash
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 raw = json.load(open(os.path.join(ROOT, "data/raw/princess.json")))
 hashes = json.load(open(os.path.join(ROOT, "data/photo-hashes.json")))
+# Agent photo, SuperAgent flag, languages, agency logo, reference, amenities, more photos (same capture day)
+extra = json.load(open(os.path.join(ROOT, "data/raw/extra.json")))
 TODAY = datetime(2026, 11, 25, tzinfo=timezone.utc)
 PHOTO_DISTANCE = 6          # perceptual-hash distance counted as "same photo"
 SIZE_TOLERANCE = 3          # sq ft
@@ -38,13 +40,26 @@ def listing(p, kind):
         "listed": (listed or "")[:10], "ageDays": age, "imageCount": p.get("images_count"),
         "images": [u.split("?")[0] for u in (p.get("images") or []) if u][:3], "title": p.get("title"),
         "url": "https://www.propertyfinder.ae" + (p.get("details_path") or ""), "level": p.get("listing_level"),
-        "description": desc[:700],
+        "description": desc[:1200],
     }
 
 L = {}
 for kind in ("rent", "sale"):
     for p in raw[kind]:
-        L[str(p["id"])] = listing(p, kind)
+        x = listing(p, kind)
+        e = extra.get(str(p["id"]), {})
+        more = [u.split("?")[0] for u in (e.get("images") or []) if u]
+        x.update({
+            "images": more or x["images"],
+            "imageCount": e.get("imageCount") or x["imageCount"],
+            "agentImage": (e.get("agentImage") or "").split("?")[0] or None,
+            "agentSuper": bool(e.get("agentSuper")),
+            "agentLanguages": e.get("agentLanguages") or [],
+            "brokerLogo": (e.get("brokerLogo") or "").split("?")[0] or None,
+            "reference": e.get("reference") or p.get("reference"),
+            "amenities": e.get("amenities") or [],
+        })
+        L[str(p["id"])] = x
 
 # building medians (AED per sq ft) by purpose and bedrooms
 groups = defaultdict(list)
