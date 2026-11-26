@@ -72,7 +72,7 @@ Read the ad and ask at the same time. One-tap questions are answered **from the 
 <tr>
 <td width="33%"><img src="docs/screens/phone-ask-scout.jpg" alt="Ask Scout on a phone"><br><sub>Ask Scout as a bottom sheet.</sub></td>
 <td width="33%"><img src="docs/screens/phone-brief.jpg" alt="Scout reads the brief and starts with a trusted top 5"><br><sub>Scout reads your brief and starts with a trusted top 5.</sub></td>
-<td width="33%"></td>
+<td width="33%"><img src="docs/screens/phone-search.jpg" alt="Search with filters on a phone"><br><sub>Search: "43 ads, 41 real flats", with filters you can see and remove.</sub></td>
 </tr>
 </table>
 
