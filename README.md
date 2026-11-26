@@ -71,7 +71,7 @@ Read the ad and ask at the same time. One-tap questions are answered **from the 
 <table>
 <tr>
 <td width="33%"><img src="docs/screenshots/phone-ask-scout.jpg" alt="Ask Scout on a phone"><br><sub>Ask Scout as a bottom sheet.</sub></td>
-<td width="33%"><img src="docs/screenshots/phone-location.jpg" alt="Commute and what is nearby"><br><sub>Your commute, and the gym, metro and supermarket you asked about.</sub></td>
+<td width="33%"><img src="docs/screenshots/phone-brief.jpg" alt="Scout reads the brief and starts with a trusted top 5"><br><sub>Scout reads your brief and starts with a trusted top 5.</sub></td>
 <td width="33%"></td>
 </tr>
 </table>
