@@ -13,7 +13,7 @@ asks every agent only what their ad doesn't say, and puts every answer in one pl
 
 **[Open the live prototype →](https://trueunit.hayyan.space)** &nbsp;·&nbsp; [60-second demo](https://trueunit.hayyan.space/assistant?demo=1) &nbsp;·&nbsp; [One-pager](ONE-PAGER.md) &nbsp;·&nbsp; [Source on GitHub](https://github.com/Hayyan612/pf-trusted-search)
 
-<img src="docs/screenshots/desktop-home.jpg" alt="TrueUnit home: tell Scout what you need" width="900">
+<img src="docs/screenshots/desktop-home.jpg?v=2" alt="TrueUnit home: tell Scout what you need" width="900">
 
 </div>
 
@@ -40,20 +40,20 @@ Full evidence in [AUDIT.md](AUDIT.md), the rules and where each one is wrong in 
 
 <table>
 <tr>
-<td width="25%"><img src="docs/screenshots/phone-consent.jpg" alt="Consent before anything is sent"><br><sub><b>Nothing goes out without you.</b> Name, how to reply, and consent at the moment of sending.</sub></td>
-<td width="25%"><img src="docs/screenshots/phone-replies.jpg" alt="Agent replies with fact status"><br><sub><b>Answers come back into one thread.</b> Every fact is marked agent confirmed, checked, not verified, or conflicting.</sub></td>
-<td width="25%"><img src="docs/screenshots/phone-viewing.jpg" alt="Viewing confirmed with checklist"><br><sub><b>Book a viewing in one tap</b>, with a checklist of what to check on the day.</sub></td>
-<td width="25%"><img src="docs/screenshots/phone-offer-nudge.jpg" alt="Offer and answer"><br><sub><b>After the viewing:</b> was it as described? Then an offer grounded in registered deals.</sub></td>
+<td width="25%"><img src="docs/screenshots/phone-consent.jpg?v=2" alt="Consent before anything is sent"><br><sub><b>Nothing goes out without you.</b> Name, how to reply, and consent at the moment of sending.</sub></td>
+<td width="25%"><img src="docs/screenshots/phone-replies.jpg?v=2" alt="Agent replies with fact status"><br><sub><b>Answers come back into one thread.</b> Every fact is marked agent confirmed, checked, not verified, or conflicting.</sub></td>
+<td width="25%"><img src="docs/screenshots/phone-viewing.jpg?v=2" alt="Viewing confirmed with checklist"><br><sub><b>Book a viewing in one tap</b>, with a checklist of what to check on the day.</sub></td>
+<td width="25%"><img src="docs/screenshots/phone-offer-nudge.jpg?v=2" alt="Offer and answer"><br><sub><b>After the viewing:</b> was it as described? Then an offer grounded in registered deals.</sub></td>
 </tr>
 </table>
 
 ### 2. Ask Scout, right beside the listing
 
-<img src="docs/screenshots/desktop-listing-scout.jpg" alt="Ask Scout panel docked beside a listing" width="100%">
+<img src="docs/screenshots/desktop-listing-scout.jpg?v=2" alt="Ask Scout panel docked beside a listing" width="100%">
 
 Read the ad and ask at the same time. One-tap questions are answered **from the ad itself, with a quote**. Type your own questions, several at once: Scout rewrites them for the agent, flags the ones the ad already answers, and you pick what to send.
 
-<img src="docs/screenshots/desktop-negotiation.jpg" alt="AI negotiation brief" width="100%">
+<img src="docs/screenshots/desktop-negotiation.jpg?v=2" alt="AI negotiation brief" width="100%">
 
 **Negotiation brief:** an opening offer, a target and a walk-away price, built only from registered deals and other ads in the tower, plus a message ready to send.
 
@@ -61,8 +61,8 @@ Read the ad and ask at the same time. One-tap questions are answered **from the 
 
 <table>
 <tr>
-<td width="50%"><img src="docs/screenshots/desktop-search.jpg" alt="Search: 144 ads, 140 real flats"><br><sub><b>"144 ads, 140 real flats."</b> Repeats are grouped; likely misleading ads are folded away with the reason.</sub></td>
-<td width="50%"><img src="docs/screenshots/desktop-filters.jpg" alt="Portal-style filters"><br><sub><b>Familiar portal filters and wording</b>, with a live count of real flats.</sub></td>
+<td width="50%"><img src="docs/screenshots/desktop-search.jpg?v=2" alt="Search: 144 ads, 140 real flats"><br><sub><b>"144 ads, 140 real flats."</b> Repeats are grouped; likely misleading ads are folded away with the reason.</sub></td>
+<td width="50%"><img src="docs/screenshots/desktop-filters.jpg?v=2" alt="Portal-style filters"><br><sub><b>Familiar portal filters and wording</b>, with a live count of real flats.</sub></td>
 </tr>
 </table>
 
@@ -70,8 +70,8 @@ Read the ad and ask at the same time. One-tap questions are answered **from the 
 
 <table>
 <tr>
-<td width="33%"><img src="docs/screenshots/phone-ask-scout.jpg" alt="Ask Scout on a phone"><br><sub>Ask Scout as a bottom sheet.</sub></td>
-<td width="33%"><img src="docs/screenshots/phone-brief.jpg" alt="Scout reads the brief and starts with a trusted top 5"><br><sub>Scout reads your brief and starts with a trusted top 5.</sub></td>
+<td width="33%"><img src="docs/screenshots/phone-ask-scout.jpg?v=2" alt="Ask Scout on a phone"><br><sub>Ask Scout as a bottom sheet.</sub></td>
+<td width="33%"><img src="docs/screenshots/phone-brief.jpg?v=2" alt="Scout reads the brief and starts with a trusted top 5"><br><sub>Scout reads your brief and starts with a trusted top 5.</sub></td>
 <td width="33%"></td>
 </tr>
 </table>
